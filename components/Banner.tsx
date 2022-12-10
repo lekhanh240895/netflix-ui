@@ -1,9 +1,9 @@
-import { InformationCircleIcon } from "@heroicons/react/24/solid";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { FaPlay } from "react-icons/fa"
-import { baseUrl } from "../constants/movie";
-import { Movie } from "../typings";
+import { InformationCircleIcon } from '@heroicons/react/24/solid';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { FaPlay } from 'react-icons/fa';
+import { baseUrl } from '../constants/movie';
+import { Movie } from '../typings';
 
 interface Props {
     netflixOriginals: Movie[];
@@ -22,7 +22,9 @@ function Banner({ netflixOriginals }: Props) {
             <div className="absolute top-0 left-0 -z-10 h-[110vh] w-screen pt-14">
                 <Image
                     className="object-cover"
-                    src={`${baseUrl}${movie?.backdrop_path || movie?.poster_path}`}
+                    src={`${baseUrl}${
+                        movie?.backdrop_path || movie?.poster_path
+                    }`}
                     alt="Movie"
                     fill
                 />
