@@ -1,12 +1,12 @@
 import Head from 'next/head';
-import { useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSelector } from 'react-redux';
 import Banner from '../components/Banner';
 import Header from '../components/Header';
 import Row from '../components/Row';
+import VideoModal from '../modals/VideoModal';
+import { appSelector } from '../redux/selector';
 import { Movie } from '../typings';
 import requests from '../utils/request';
-import { useRouter } from 'next/router';
 
 interface Props {
     netflixOriginals: Movie[];
@@ -28,6 +28,8 @@ export default function Home({
     romanceMovies,
     documentaries,
 }: Props) {
+    const { videoModalShow } = useSelector(appSelector);
+
     return (
         <div className="relative h-screen bg-gradient-to-b lg:h-[140vh] max-w-[100vw]">
             <Head>
@@ -59,6 +61,9 @@ export default function Home({
                     <Row title="Romance Movies" movies={romanceMovies} />
                     <Row title="Documentaries" movies={documentaries} />
                 </section>
+
+                {/* VideoModal */}
+                {videoModalShow && <VideoModal />}
             </main>
         </div>
     );

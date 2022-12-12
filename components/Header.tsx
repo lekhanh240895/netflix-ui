@@ -4,17 +4,28 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
+import { removeCookies } from 'cookies-next';
 
 function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
     const { status } = useSession();
     const router = useRouter();
 
-    useEffect(() => {
-        if (status === 'unauthenticated') {
-            router.push('/auth/login');
-        }
-    }, [status, router]);
+    // useEffect(() => {
+    //     if (status === 'unauthenticated') {
+    //         router.push('/auth/login');
+    //     }
+    // }, [status, router]);
+
+    const handleSignOut = () => {
+        // signOut({
+        //     redirect: false,
+        // });
+
+        // Custom Authentication
+        removeCookies('token');
+        router.push('/auth/login');
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -34,14 +45,15 @@ function Header() {
     return (
         <header className={`${isScrolled && 'bg-[#141414]'}`}>
             <div className="flex items-center space-x-2 md:space-x-10">
-                <Image
-                    src="https://images.ctfassets.net/4cd45et68cgf/7LrExJ6PAj6MSIPkDyCO86/542b1dfabbf3959908f69be546879952/Netflix-Brand-Logo.png?w=684&h=456"
-                    alt=""
-                    width={150}
-                    height={150}
-                    priority
-                    className="object-cover cursor-pointer"
-                />
+                <div className="relative w-36 h-36">
+                    <Image
+                        src="https://images.ctfassets.net/4cd45et68cgf/7LrExJ6PAj6MSIPkDyCO86/542b1dfabbf3959908f69be546879952/Netflix-Brand-Logo.png?w=684&h=456"
+                        alt=""
+                        fill
+                        priority
+                        className="object-contain cursor-pointer"
+                    />
+                </div>
 
                 <ul className="hidden md:flex space-x-4 items-center ">
                     <li className="headerLink">Home</li>
@@ -67,11 +79,7 @@ function Header() {
                 </Link>
                 <span
                     className="text-sm font-semibold cursor-pointer"
-                    onClick={() =>
-                        signOut({
-                            redirect: false,
-                        })
-                    }
+                    onClick={handleSignOut}
                 >
                     Sign out
                 </span>

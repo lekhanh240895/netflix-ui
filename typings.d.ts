@@ -1,7 +1,13 @@
 export interface Genre {
-    name?: string | undefined | null;
-    image?: string | undefined | null;
-    email?: string | undefined | null;
+    name: string;
+    email: string;
+}
+
+export interface User {
+    id: string;
+    name?: string | null;
+    email?: string | null;
+    image?: string | null;
 }
 
 export interface Movie {

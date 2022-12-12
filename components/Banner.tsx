@@ -2,7 +2,9 @@ import { InformationCircleIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { FaPlay } from 'react-icons/fa';
+import { useDispatch } from 'react-redux';
 import { baseUrl } from '../constants/movie';
+import { showVideoModal, setSelectedMovie } from '../features/app/appSlice';
 import { Movie } from '../typings';
 
 interface Props {
@@ -11,6 +13,7 @@ interface Props {
 
 function Banner({ netflixOriginals }: Props) {
     const [movie, setMovie] = useState<Movie | null>(null);
+    const dispatch = useDispatch();
 
     useEffect(() => {
         const randomIndex = Math.floor(Math.random() * netflixOriginals.length);
@@ -42,7 +45,13 @@ function Banner({ netflixOriginals }: Props) {
                     <FaPlay className="w-4 h-4 text-black md:h-7 md:w-7" />
                     Play
                 </button>
-                <button className="bannerButton bg-[gray]/70">
+                <button
+                    className="bannerButton bg-[gray]/70"
+                    onClick={() => {
+                        dispatch(showVideoModal());
+                        dispatch(setSelectedMovie(movie));
+                    }}
+                >
                     <InformationCircleIcon className="w-5 h-5 md:h-8 md:w-8" />
                     More Info
                 </button>
