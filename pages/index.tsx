@@ -4,6 +4,7 @@ import Banner from '../components/Banner';
 import Header from '../components/Header';
 import Row from '../components/Row';
 import VideoModal from '../components/VideoModal';
+import { useAuth } from '../context/AuthContext';
 import { appSelector } from '../redux/selector';
 import { Movie } from '../typings';
 import requests from '../utils/request';
@@ -29,7 +30,9 @@ export default function Home({
     documentaries,
 }: Props) {
     const { videoModalShow } = useSelector(appSelector);
+    const { loading } = useAuth();
 
+    if (loading) return null;
     return (
         <div
             className={`relative h-screen bg-gradient-to-b lg:h-[140vh] max-w-[100vw] ${

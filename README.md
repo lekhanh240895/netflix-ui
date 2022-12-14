@@ -1,3 +1,9 @@
+NEXT_PUBLIC_API_KEY=2ac74fcea3b1469efcd96acca1a27245
+TOKEN_SECRET=alsdaij232@#1jnz
+MONGODB_URI=mongodb+srv://lekhanh:jX6hjdRzdClmKDYk@cluster0.ivyjmmx.mongodb.net/Netflix?retryWrites=true&w=majority
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_51MEzimFfupIoPTpagl3NuGdButaPFwJorTkgggOOwCCTu5mS9A5vrHPwp37B4nYcptlZsX3JALZ4LkS93HD2rrKg00VZrARVgk
+STRIPE_SECRET_KEY=sk_test_51MEzimFfupIoPTpaF6XFAHJ72x2MuQGkALDqKzAs8Ahmj3IcB9WIJeLL8N4S9Uy4Q5ySAkgPVHrYFfKdvGsGjhsH007Snk7I2w
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
@@ -22,8 +28,8 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+-   [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+-   [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
