@@ -31,7 +31,11 @@ export default function Home({
     const { videoModalShow } = useSelector(appSelector);
 
     return (
-        <div className="relative h-screen bg-gradient-to-b lg:h-[140vh] max-w-[100vw]">
+        <div
+            className={`relative h-screen bg-gradient-to-b lg:h-[140vh] max-w-[100vw] ${
+                videoModalShow && 'lg:h-screen overflow-hidden scrollbar-hide'
+            }`}
+        >
             <Head>
                 <title>Home - NetflixClone</title>
                 <meta
