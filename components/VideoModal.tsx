@@ -78,34 +78,36 @@ export default function VideoModal() {
                         muted={muted}
                     />
 
-                    <div className="absolute bottom-16 left-12 flex flex-row items-center space-x-2">
-                        <button className="flex flex-row items-center space-x-2 bg-white py-1 px-4 md:py-2 md:px-7 rounded hover:bg-[#e6e6e6]">
-                            <PlayIcon
-                                className="w-4 h-4 md:w-7 md:h-7"
-                                color="black"
-                            />
-                            <span className="text-black text-sm md:text-lg font-medium">
-                                Play
-                            </span>
-                        </button>
-                        <button className="modalButton ">
-                            <PlusIcon className="w-3 h-3 md:w-5 md:h-5" />
-                        </button>
-                        <button className="modalButton">
-                            <HandThumbUpIcon className="w-3 h-3 md:w-5 md:h-5" />
+                    <div className="absolute bottom-12 left-0 right-0 px-12 flex items-center justify-between">
+                        <div className="flex flex-row items-center space-x-2">
+                            <button className="flex flex-row items-center space-x-2 bg-white py-1 px-4 md:py-2 md:px-7 rounded hover:bg-[#e6e6e6]">
+                                <PlayIcon
+                                    className="w-4 h-4 md:w-7 md:h-7"
+                                    color="black"
+                                />
+                                <span className="text-black text-sm md:text-lg font-medium">
+                                    Play
+                                </span>
+                            </button>
+                            <button className="modalButton ">
+                                <PlusIcon className="w-3 h-3 md:w-5 md:h-5" />
+                            </button>
+                            <button className="modalButton">
+                                <HandThumbUpIcon className="w-3 h-3 md:w-5 md:h-5" />
+                            </button>
+                        </div>
+
+                        <button
+                            className="modalButton opacity-60 hover:opacity-100"
+                            onClick={() => setMuted(!muted)}
+                        >
+                            {muted ? (
+                                <SpeakerXMarkIcon className="w-3 h-3 md:w-5 md:h-5" />
+                            ) : (
+                                <SpeakerWaveIcon className="w-3 h-3 md:w-5 md:h-5" />
+                            )}
                         </button>
                     </div>
-
-                    <button
-                        className="modalButton absolute bottom-16 right-12 opacity-60 hover:opacity-100"
-                        onClick={() => setMuted(!muted)}
-                    >
-                        {muted ? (
-                            <SpeakerXMarkIcon className="w-3 h-3 md:w-5 md:h-5" />
-                        ) : (
-                            <SpeakerWaveIcon className="w-3 h-3 md:w-5 md:h-5" />
-                        )}
-                    </button>
                 </div>
 
                 <div className="px-12 py-4 grid grid-cols-3 space-x-4 bg-[#181818]">

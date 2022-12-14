@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import Banner from '../components/Banner';
 import Header from '../components/Header';
 import Row from '../components/Row';
-import VideoModal from '../modals/VideoModal';
+import VideoModal from '../components/VideoModal';
 import { appSelector } from '../redux/selector';
 import { Movie } from '../typings';
 import requests from '../utils/request';
@@ -48,7 +48,7 @@ export default function Home({
             {/* Header */}
             <Header />
 
-            <main className="relative pl-2 md:pl-4 pb-24 lg:space-y-14 lg:pl-16 pt-14">
+            <main className="relative pl-4 md:pl-4 pb-24 lg:space-y-14 lg:pl-16 pt-14">
                 {/* Banner */}
                 <Banner netflixOriginals={netflixOriginals} />
 

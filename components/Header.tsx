@@ -2,28 +2,22 @@ import Image from 'next/image';
 import { MagnifyingGlassIcon, BellIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { signOut, useSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
-import { removeCookies } from 'cookies-next';
+import { useAuth } from '../context/AuthContext';
+import BasicMenu from './BasicMenu';
 
 function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
-    const { status } = useSession();
     const router = useRouter();
+    const { logout } = useAuth();
 
-    // useEffect(() => {
-    //     if (status === 'unauthenticated') {
-    //         router.push('/auth/login');
-    //     }
-    // }, [status, router]);
+    const handleSignOut = async () => {
+        /* Custom Authentication */
+        // removeCookies('token');
+        // router.push('/auth/login');
 
-    const handleSignOut = () => {
-        // signOut({
-        //     redirect: false,
-        // });
-
-        // Custom Authentication
-        removeCookies('token');
+        /* Firebase */
+        await logout();
         router.push('/auth/login');
     };
 
@@ -43,7 +37,7 @@ function Header() {
     }, []);
 
     return (
-        <header className={`${isScrolled && 'bg-[#141414]'}`}>
+        <header className={`${isScrolled && 'bg-[#141414]/80'}`}>
             <div className="flex items-center space-x-2 md:space-x-10">
                 <div className="relative w-36 h-36">
                     <Image
@@ -68,21 +62,8 @@ function Header() {
                 <MagnifyingGlassIcon className="hidden h-6 w-6 text-white md:inline" />
                 <p className="hidden lg-inline">Kis</p>
                 <BellIcon className="h-6 w-6" />
-                <Link href="/account">
-                    <Image
-                        src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png"
-                        alt=""
-                        className="w-6 h-6 cursor-pointer rounded"
-                        width={100}
-                        height={100}
-                    />
-                </Link>
-                <span
-                    className="text-sm font-semibold cursor-pointer"
-                    onClick={handleSignOut}
-                >
-                    Sign out
-                </span>
+
+                <BasicMenu />
             </div>
         </header>
     );
