@@ -61,7 +61,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             setInitialLoading(false);
             if (user) {
                 setUser(user);
-                router.push('/');
                 setLoading(false);
             } else {
                 setUser(null);

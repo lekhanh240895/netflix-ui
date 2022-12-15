@@ -30,6 +30,7 @@ function Banner({ netflixOriginals }: Props) {
                     }`}
                     alt="Movie"
                     fill
+                    sizes="large"
                 />
             </div>
 

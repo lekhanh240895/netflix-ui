@@ -37,7 +37,9 @@ function Header() {
     }, []);
 
     return (
-        <header className={`${isScrolled && 'bg-[#141414]/80'}`}>
+        <header
+            className={` ${isScrolled ? 'bg-[#141414]/80' : 'bg-[#141414]/2'}`}
+        >
             <div className="flex items-center space-x-2 md:space-x-10">
                 <div className="relative w-36 h-36">
                     <Image
@@ -46,6 +48,7 @@ function Header() {
                         fill
                         priority
                         className="object-contain cursor-pointer"
+                        sizes="large"
                     />
                 </div>
 

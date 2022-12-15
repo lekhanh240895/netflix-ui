@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useAuth } from '../../context/AuthContext';
 import { Alert } from '@mui/material';
+import { useRouter } from 'next/router';
 
 interface Inputs {
     email: string;
@@ -22,6 +23,7 @@ function Login() {
         formState: { errors },
     } = useForm<Inputs>();
     const { signIn, signUp } = useAuth();
+    const router = useRouter();
 
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         if (login) {
@@ -35,6 +37,7 @@ function Login() {
 
                 /* Firebase */
                 await signIn(email, password);
+                router.push('/');
             } catch (error: any) {
                 setError(error.message);
             }
@@ -50,6 +53,7 @@ function Login() {
                 // });
 
                 await signUp(email, password);
+                router.push('/');
             } catch (error) {
                 console.log(error);
             }
@@ -76,7 +80,7 @@ function Login() {
                 sizes="large"
             />
 
-            <div className="absolute top-0 left-0 w-48 h-24">
+            <div className="absolute top-0 left-0 w-48 h-96">
                 <Image
                     src="/Netflix-Brand-Logo.png"
                     alt="Logo"
