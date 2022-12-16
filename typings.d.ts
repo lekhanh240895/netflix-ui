@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface Genre {
     name: string;
     email: string;
@@ -27,6 +29,21 @@ export interface Movie {
     poster_path: string;
     vote_average: number;
     vote_count: number;
+}
+
+export interface Product {
+    id: number;
+    name: string;
+    price: number;
+    currency: string;
+    quality: string;
+    resolution: string;
+    devices: Device[];
+}
+
+export interface Device {
+    name: string;
+    icon: React.ReactNode;
 }
 
 export interface Element {

@@ -1,11 +1,118 @@
+import {
+    ComputerDesktopIcon,
+    DevicePhoneMobileIcon,
+    DeviceTabletIcon,
+    TvIcon,
+} from '@heroicons/react/24/outline';
 import { CheckIcon } from '@heroicons/react/24/solid';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
-import Header from '../components/Header';
+import { useState } from 'react';
 import Table from '../components/Table';
+import { Product } from '../typings';
+
+const products: Product[] = [
+    {
+        id: 1,
+        name: 'Di Động',
+        price: 70000,
+        currency: 'VND',
+        quality: 'Tốt',
+        resolution: '480p',
+        devices: [
+            {
+                name: 'Điện thoại',
+                icon: <DevicePhoneMobileIcon className="w-8 h-8" />,
+            },
+            {
+                name: 'Máy tính bảng',
+                icon: <DeviceTabletIcon className="w-8 h-8" />,
+            },
+        ],
+    },
+    {
+        id: 2,
+        name: 'Cơ bản',
+        price: 180000,
+        currency: 'VND',
+        quality: 'Tốt',
+        resolution: '720p',
+        devices: [
+            {
+                name: 'Điện thoại',
+                icon: <DevicePhoneMobileIcon className="w-8 h-8" />,
+            },
+            {
+                name: 'Máy tính bảng',
+                icon: <DeviceTabletIcon className="w-8 h-8" />,
+            },
+            {
+                name: 'Máy tính',
+                icon: <ComputerDesktopIcon className="w-8 h-8" />,
+            },
+            {
+                name: 'TV',
+                icon: <TvIcon className="w-8 h-8" />,
+            },
+        ],
+    },
+    {
+        id: 3,
+        name: 'Tiêu chuẩn',
+        price: 220000,
+        currency: 'VND',
+        quality: 'Tốt hơn',
+        resolution: '1080p',
+        devices: [
+            {
+                name: 'Điện thoại',
+                icon: <DevicePhoneMobileIcon className="w-8 h-8" />,
+            },
+            {
+                name: 'Máy tính bảng',
+                icon: <DeviceTabletIcon className="w-8 h-8" />,
+            },
+            {
+                name: 'Máy tính',
+                icon: <ComputerDesktopIcon className="w-8 h-8" />,
+            },
+            {
+                name: 'TV',
+                icon: <TvIcon className="w-8 h-8" />,
+            },
+        ],
+    },
+    {
+        id: 4,
+        name: 'Cao cấp',
+        price: 260000,
+        currency: 'VND',
+        quality: 'Tốt nhất',
+        resolution: '4K+HDR',
+        devices: [
+            {
+                name: 'Điện thoại',
+                icon: <DevicePhoneMobileIcon className="w-8 h-8" />,
+            },
+            {
+                name: 'Máy tính bảng',
+                icon: <DeviceTabletIcon className="w-8 h-8" />,
+            },
+            {
+                name: 'Máy tính',
+                icon: <ComputerDesktopIcon className="w-8 h-8" />,
+            },
+            {
+                name: 'TV',
+                icon: <TvIcon className="w-8 h-8" />,
+            },
+        ],
+    },
+];
 
 function PlanForm() {
+    const [selectProduct, setSelectProduct] = useState<Product | null>(null);
     return (
         <div>
             <Head>
@@ -32,7 +139,7 @@ function PlanForm() {
             </header>
 
             <main className="relative p-4 md:pl-4 pb-24 lg:space-y-14 lg:pl-20 mt-12 md:mt-24 max-w-5xl mx-auto">
-                <div>
+                <div className="mb-4">
                     <h5>Step 1/2</h5>
                     <h2>Chọn gói dịch vụ phù hợp với bạn</h2>
                     <ul className="mt-4 space-y-4">
@@ -58,33 +165,39 @@ function PlanForm() {
                 </div>
 
                 {/* Products */}
-                <div className="flex flex-col md:flex-row justify-end">
-                    <div className="flex flex-row mt-8 md:w-[60%]">
-                        <div className="planBox">
-                            <span className="text-center font-semibold">
-                                Di Động
-                            </span>
-                        </div>
-                        <div className="planBox">
-                            <span className="text-center font-semibold">
-                                Cơ bản
-                            </span>
-                        </div>
-                        <div className="planBox">
-                            <span className="text-center font-semibold">
-                                Tiêu chuẩn
-                            </span>
-                        </div>
-                        <div className="planBox">
-                            <span className="text-center font-semibold">
-                                Cao cấp
-                            </span>
-                        </div>
+                <div className="flex flex-col md:flex-row justify-end mb-4">
+                    <div className="flex flex-row md:w-[60%]">
+                        {products.map((product) => (
+                            <div className="planBox" key={product.id}>
+                                <span className="text-center font-semibold">
+                                    {product.name}
+                                </span>
+                            </div>
+                        ))}
                     </div>
                 </div>
 
                 {/* Table */}
-                <Table />
+                <Table products={products} />
+
+                <p className="text-gray-400 text-sm my-4">
+                    Việc bạn có thể xem ở chế độ HD (720p), Full HD (1080p),
+                    Ultra HD (4K) và HDR hay không phụ thuộc vào dịch vụ
+                    internet và khả năng của thiết bị. Không phải tất cả nội
+                    dung đều có sẵn ở mọi độ phân giải. Xem Điều khoản sử dụng
+                    của chúng tôi để biết thêm chi tiết.
+                </p>
+                <p className="text-gray-400 text-sm mb-4">
+                    Chỉ những người sống cùng bạn mới có thể dùng tài khoản của
+                    bạn. Xem trên 4 thiết bị khác nhau cùng lúc với gói Cao cấp,
+                    2 với gói Tiêu chuẩn và 1 với gói Cơ bản và Di động.
+                </p>
+
+                <div className="text-center">
+                    <button className="w-full md:w-1/2 bg-primary px-10 py-5">
+                        Tiếp theo
+                    </button>
+                </div>
             </main>
         </div>
     );

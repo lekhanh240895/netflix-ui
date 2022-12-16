@@ -1,38 +1,57 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Product } from '../typings';
 
-function Table() {
+interface Props {
+    products: Product[];
+}
+function Table({ products }: Props) {
     return (
         <table className="w-full">
-            <tbody className="w-full divide-y divide-[gray]">
+            <tbody className="divide-y divide-[gray]">
                 <tr className="tableRow">
                     <td className="tableDataTitle">Giá hàng tháng</td>
-                    <td className="tableDataFeature">70.000 ₫</td>
-                    <td className="tableDataFeature">180.000 ₫</td>
-                    <td className="tableDataFeature">220.000 ₫</td>
-                    <td className="tableDataFeature">260.000 ₫</td>
+                    {products.map((product) => (
+                        <td className="tableDataFeature" key={product.id}>
+                            <span className="mr-1">{product.price}</span>
+                            <span className="underline underline-offset-2">
+                                đ
+                            </span>
+                        </td>
+                    ))}
                 </tr>
                 <tr className="tableRow">
                     <td className="tableDataTitle">Chất lượng video</td>
-                    <td className="tableDataFeature">Tốt</td>
-                    <td className="tableDataFeature">Tốt</td>
-                    <td className="tableDataFeature">Tốt nhất</td>
-                    <td className="tableDataFeature">260.000 ₫</td>
+                    {products.map((product) => (
+                        <td className="tableDataFeature" key={product.id}>
+                            {product.quality}
+                        </td>
+                    ))}
                 </tr>
                 <tr className="tableRow">
                     <td className="tableDataTitle">Độ phân giải</td>
-                    <td className="tableDataFeature">480p</td>
-                    <td className="tableDataFeature">720p</td>
-                    <td className="tableDataFeature">1080p</td>
-                    <td className="tableDataFeature">4K+HDR</td>
+                    {products.map((product) => (
+                        <td className="tableDataFeature" key={product.id}>
+                            {product.resolution}
+                        </td>
+                    ))}
                 </tr>
                 <tr className="tableRow">
                     <td className="tableDataTitle">
                         Các thiết bị bạn có thể dùng để xem
                     </td>
-                    <td className="tableDataFeature">Điện thoại</td>
-                    <td className="tableDataFeature">Máy tính bảng</td>
-                    <td className="tableDataFeature">Máy tính</td>
-                    <td className="tableDataFeature">TV</td>
+                    {products.map((product) => (
+                        <td className="tableDataFeature" key={product.id}>
+                            {product.devices.map((device, index) => (
+                                <span
+                                    className="tableDataFeatureDevice"
+                                    key={index}
+                                >
+                                    {device.icon}
+                                    <span>{device.name}</span>
+                                </span>
+                            ))}
+                        </td>
+                    ))}
                 </tr>
             </tbody>
         </table>
