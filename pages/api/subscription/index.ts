@@ -10,7 +10,7 @@ export default async function handler(
     res: NextApiResponse,
 ) {
     if (req.method === 'POST') {
-        const id: string = req.body.id as string;
+        const priceId: string = req.body.priceId as string;
         try {
             // Create Checkout Sessions from body params.
             const params: Stripe.Checkout.SessionCreateParams = {
@@ -18,7 +18,7 @@ export default async function handler(
                 mode: 'subscription',
                 line_items: [
                     {
-                        price: id,
+                        price: priceId,
                         quantity: 1,
                     },
                 ],

@@ -38,8 +38,12 @@ function Login() {
                 /* Firebase */
                 await signIn(email, password);
                 router.push('/');
-            } catch (error: any) {
-                setError(error.message);
+            } catch (err) {
+                const errorMessage =
+                    err instanceof Error
+                        ? err.message
+                        : 'Internal server error';
+                setError(errorMessage);
             }
         } else {
             // SignUp

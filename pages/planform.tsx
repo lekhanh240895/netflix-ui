@@ -1,118 +1,40 @@
-import {
-    ComputerDesktopIcon,
-    DevicePhoneMobileIcon,
-    DeviceTabletIcon,
-    TvIcon,
-} from '@heroicons/react/24/outline';
 import { CheckIcon } from '@heroicons/react/24/solid';
 import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import Table from '../components/Table';
-import { Product } from '../typings';
+import { Plan } from '../typings';
+import { fetchPostJSON } from '../utils/api-helpers';
+import getStripe from '../utils/get-stripesjs';
+import { useAuth } from '../context/AuthContext';
+import Stripe from 'stripe';
 
-const products: Product[] = [
-    {
-        id: 1,
-        name: 'Di Động',
-        price: 70000,
-        currency: 'VND',
-        quality: 'Tốt',
-        resolution: '480p',
-        devices: [
-            {
-                name: 'Điện thoại',
-                icon: <DevicePhoneMobileIcon className="w-8 h-8" />,
-            },
-            {
-                name: 'Máy tính bảng',
-                icon: <DeviceTabletIcon className="w-8 h-8" />,
-            },
-        ],
-    },
-    {
-        id: 2,
-        name: 'Cơ bản',
-        price: 180000,
-        currency: 'VND',
-        quality: 'Tốt',
-        resolution: '720p',
-        devices: [
-            {
-                name: 'Điện thoại',
-                icon: <DevicePhoneMobileIcon className="w-8 h-8" />,
-            },
-            {
-                name: 'Máy tính bảng',
-                icon: <DeviceTabletIcon className="w-8 h-8" />,
-            },
-            {
-                name: 'Máy tính',
-                icon: <ComputerDesktopIcon className="w-8 h-8" />,
-            },
-            {
-                name: 'TV',
-                icon: <TvIcon className="w-8 h-8" />,
-            },
-        ],
-    },
-    {
-        id: 3,
-        name: 'Tiêu chuẩn',
-        price: 220000,
-        currency: 'VND',
-        quality: 'Tốt hơn',
-        resolution: '1080p',
-        devices: [
-            {
-                name: 'Điện thoại',
-                icon: <DevicePhoneMobileIcon className="w-8 h-8" />,
-            },
-            {
-                name: 'Máy tính bảng',
-                icon: <DeviceTabletIcon className="w-8 h-8" />,
-            },
-            {
-                name: 'Máy tính',
-                icon: <ComputerDesktopIcon className="w-8 h-8" />,
-            },
-            {
-                name: 'TV',
-                icon: <TvIcon className="w-8 h-8" />,
-            },
-        ],
-    },
-    {
-        id: 4,
-        name: 'Cao cấp',
-        price: 260000,
-        currency: 'VND',
-        quality: 'Tốt nhất',
-        resolution: '4K+HDR',
-        devices: [
-            {
-                name: 'Điện thoại',
-                icon: <DevicePhoneMobileIcon className="w-8 h-8" />,
-            },
-            {
-                name: 'Máy tính bảng',
-                icon: <DeviceTabletIcon className="w-8 h-8" />,
-            },
-            {
-                name: 'Máy tính',
-                icon: <ComputerDesktopIcon className="w-8 h-8" />,
-            },
-            {
-                name: 'TV',
-                icon: <TvIcon className="w-8 h-8" />,
-            },
-        ],
-    },
-];
+interface Props {
+    plans: Plan[];
+}
 
-function PlanForm() {
-    const [selectProduct, setSelectProduct] = useState<Product | null>(null);
+function PlanForm({ plans }: Props) {
+    const [selectedPlan, setSelectedPlan] = useState<Plan | null>(
+        plans[plans.length - 1],
+    );
+    const { logout } = useAuth();
+    const handleClick = async () => {
+        const response = await fetchPostJSON('/api/subscription', {
+            priceId: selectedPlan?.id,
+        });
+
+        if (response.statusCode === 500) {
+            console.error(response.message);
+            return;
+        }
+
+        const stripe = await getStripe();
+        const { error } = await stripe!.redirectToCheckout({
+            sessionId: response.id,
+        });
+        console.warn(error.message);
+    };
     return (
         <div>
             <Head>
@@ -131,9 +53,13 @@ function PlanForm() {
                         src="/Netflix-Brand-Logo.png"
                         className="object-cover"
                         fill
+                        sizes="large"
                     />
                 </Link>
-                <a className="text-medium md:text-xl font-medium hover:underline h-full flex items-center cursor-pointer">
+                <a
+                    className="text-medium md:text-xl font-medium hover:underline h-full flex items-center cursor-pointer"
+                    onClick={logout}
+                >
                     Log out
                 </a>
             </header>
@@ -167,10 +93,18 @@ function PlanForm() {
                 {/* Products */}
                 <div className="flex flex-col md:flex-row justify-end mb-4">
                     <div className="flex flex-row md:w-[60%]">
-                        {products.map((product) => (
-                            <div className="planBox" key={product.id}>
+                        {plans.map((plan) => (
+                            <div
+                                className={`planBox ${
+                                    selectedPlan?.id === plan.id
+                                        ? 'opaicty-100'
+                                        : ' opacity-70'
+                                }`}
+                                key={plan.id}
+                                onClick={() => setSelectedPlan(plan)}
+                            >
                                 <span className="text-center font-semibold">
-                                    {product.name}
+                                    {plan.name}
                                 </span>
                             </div>
                         ))}
@@ -178,7 +112,11 @@ function PlanForm() {
                 </div>
 
                 {/* Table */}
-                <Table products={products} />
+                <Table
+                    plans={plans}
+                    selectedPlan={selectedPlan}
+                    setSelectedPlan={setSelectedPlan}
+                />
 
                 <p className="text-gray-400 text-sm my-4">
                     Việc bạn có thể xem ở chế độ HD (720p), Full HD (1080p),
@@ -194,7 +132,10 @@ function PlanForm() {
                 </p>
 
                 <div className="text-center">
-                    <button className="w-full md:w-1/2 bg-primary px-10 py-5">
+                    <button
+                        className="w-full md:w-1/2 bg-primary px-10 py-5"
+                        onClick={handleClick}
+                    >
                         Tiếp theo
                     </button>
                 </div>
@@ -204,3 +145,37 @@ function PlanForm() {
 }
 
 export default PlanForm;
+
+export const getStaticProps = async () => {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+        // https://github.com/stripe/stripe-node#configuration
+        apiVersion: '2022-11-15',
+    });
+
+    const { data: prices } = await stripe.prices.list();
+
+    const plans = await Promise.all(
+        prices.map(async (price) => {
+            const product = await stripe.products.retrieve(
+                price.product as string,
+            );
+
+            return {
+                id: price.id,
+                name: product.name,
+                price: price.unit_amount,
+                interval: price.recurring?.interval,
+                currency: price.currency,
+                quality: product.metadata.quality,
+                resolution: product.metadata.resolution,
+                devices: product.metadata.devices,
+            };
+        }),
+    );
+
+    return {
+        props: {
+            plans,
+        },
+    };
+};

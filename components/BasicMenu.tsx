@@ -34,26 +34,28 @@ function BasicMenu() {
         router.push('/auth/login');
     };
     return (
-        <div
-            onMouseEnter={handleClick}
-            className="flex flex-row items-center space-x-2"
-        >
-            <div className="relative w-8 h-8 cursor-pointer rounded">
-                <Image
-                    src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png"
-                    alt="Avatar"
-                    fill
-                    sizes="large"
+        <div>
+            <div
+                onClick={handleClick}
+                className="flex flex-row items-center space-x-1 cursor-pointer"
+            >
+                <div className="relative w-8 h-8 cursor-pointer rounded">
+                    <Image
+                        src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png"
+                        alt="Avatar"
+                        fill
+                        sizes="large"
+                    />
+                </div>
+
+                <ChevronDownIcon
+                    className="w-4 h-4 transition-all 200ms hidden md:block"
+                    color="white"
+                    style={{
+                        transform: open ? 'rotateZ(180deg)' : 'none',
+                    }}
                 />
             </div>
-
-            <ChevronDownIcon
-                className="w-4 h-4 transition-all 200ms hidden md:block"
-                color="white"
-                style={{
-                    transform: open ? 'rotateZ(180deg)' : 'none',
-                }}
-            />
 
             <Menu
                 className="menu"

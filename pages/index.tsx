@@ -8,6 +8,9 @@ import { useAuth } from '../context/AuthContext';
 import { appSelector } from '../redux/selector';
 import { Movie } from '../typings';
 import requests from '../utils/request';
+import { fetchPostJSON } from '../utils/api-helpers';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 interface Props {
     netflixOriginals: Movie[];
@@ -31,6 +34,34 @@ export default function Home({
 }: Props) {
     const { videoModalShow } = useSelector(appSelector);
     const { loading } = useAuth();
+    const [message, setMessage] = useState<string>('');
+    const [success, setSuccess] = useState<boolean>(false);
+    const [sessionId, setSessionId] = useState<string | null>('');
+    const router = useRouter();
+
+    useEffect(() => {
+        // Check to see if this is a redirect back from Checkout
+        const query = new URLSearchParams(window.location.search);
+
+        if (query.get('success')) {
+            setSuccess(true);
+            setSessionId(query.get('session_id'));
+        }
+
+        if (query.get('canceled')) {
+            setSuccess(false);
+            setMessage(
+                "Order canceled -- continue to shop around and checkout when you're ready.",
+            );
+        }
+    }, [sessionId]);
+
+    const gotoBillingPortal = async () => {
+        const portal = await fetchPostJSON('/api/create-portal-session', {
+            sessionId,
+        });
+        router.push(portal.url);
+    };
 
     if (loading) return null;
     return (
@@ -54,6 +85,13 @@ export default function Home({
             <main className="relative pl-4 md:pl-4 pb-24 lg:space-y-14 lg:pl-16 pt-14">
                 {/* Banner */}
                 <Banner netflixOriginals={netflixOriginals} />
+
+                <button
+                    id="checkout-and-portal-button"
+                    onClick={gotoBillingPortal}
+                >
+                    Manage your billing information
+                </button>
 
                 <section className="space-y-2 md:space-y-4">
                     {/* Row */}

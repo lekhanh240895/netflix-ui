@@ -1,37 +1,87 @@
-import React, { useState } from 'react';
-import { Product } from '../typings';
+import { Dispatch, SetStateAction } from 'react';
+import { Plan } from '../typings';
+import {
+    ComputerDesktopIcon,
+    DevicePhoneMobileIcon,
+    DeviceTabletIcon,
+    TvIcon,
+} from '@heroicons/react/24/outline';
+import { formatAmountForDisplay } from '../utils/stripe-helpers';
 
 interface Props {
-    products: Product[];
+    plans: Plan[];
+    selectedPlan: Plan | null;
+    setSelectedPlan: Dispatch<SetStateAction<Plan | null>>;
 }
-function Table({ products }: Props) {
+
+function Table({ plans, selectedPlan, setSelectedPlan }: Props) {
+    const icon = (name: string) => {
+        switch (name) {
+            case 'phone':
+                return <DevicePhoneMobileIcon className="w-8 h-8" />;
+            case 'tablet':
+                return <DeviceTabletIcon className="w-8 h-8" />;
+            case 'computer':
+                return <ComputerDesktopIcon className="w-8 h-8" />;
+            case 'tv':
+                return <TvIcon className="w-8 h-8" />;
+            default:
+                return;
+        }
+    };
     return (
         <table className="w-full">
             <tbody className="divide-y divide-[gray]">
                 <tr className="tableRow">
                     <td className="tableDataTitle">Giá hàng tháng</td>
-                    {products.map((product) => (
-                        <td className="tableDataFeature" key={product.id}>
-                            <span className="mr-1">{product.price}</span>
-                            <span className="underline underline-offset-2">
-                                đ
+                    {plans.map((plan) => (
+                        <td
+                            className={`tableDataFeature ${
+                                selectedPlan?.id === plan.id
+                                    ? 'text-primary'
+                                    : 'opacity-70'
+                            }`}
+                            onClick={() => setSelectedPlan(plan)}
+                            key={plan.id}
+                        >
+                            <span className="mr-1">
+                                {formatAmountForDisplay(
+                                    plan.price,
+                                    plan.currency,
+                                )}
                             </span>
                         </td>
                     ))}
                 </tr>
                 <tr className="tableRow">
                     <td className="tableDataTitle">Chất lượng video</td>
-                    {products.map((product) => (
-                        <td className="tableDataFeature" key={product.id}>
-                            {product.quality}
+                    {plans.map((plan) => (
+                        <td
+                            className={`tableDataFeature ${
+                                selectedPlan?.id === plan.id
+                                    ? 'text-primary'
+                                    : 'opacity-70'
+                            }`}
+                            onClick={() => setSelectedPlan(plan)}
+                            key={plan.id}
+                        >
+                            {plan.quality}
                         </td>
                     ))}
                 </tr>
                 <tr className="tableRow">
                     <td className="tableDataTitle">Độ phân giải</td>
-                    {products.map((product) => (
-                        <td className="tableDataFeature" key={product.id}>
-                            {product.resolution}
+                    {plans.map((plan) => (
+                        <td
+                            className={`tableDataFeature ${
+                                selectedPlan?.id === plan.id
+                                    ? 'text-primary'
+                                    : 'opacity-70'
+                            }`}
+                            onClick={() => setSelectedPlan(plan)}
+                            key={plan.id}
+                        >
+                            {plan.resolution}
                         </td>
                     ))}
                 </tr>
@@ -39,15 +89,24 @@ function Table({ products }: Props) {
                     <td className="tableDataTitle">
                         Các thiết bị bạn có thể dùng để xem
                     </td>
-                    {products.map((product) => (
-                        <td className="tableDataFeature" key={product.id}>
-                            {product.devices.map((device, index) => (
+
+                    {plans.map((plan) => (
+                        <td
+                            className={`tableDataFeature ${
+                                selectedPlan?.id === plan.id
+                                    ? 'text-primary'
+                                    : 'opacity-70'
+                            }`}
+                            onClick={() => setSelectedPlan(plan)}
+                            key={plan.id}
+                        >
+                            {plan.devices.split(',')?.map((device, index) => (
                                 <span
                                     className="tableDataFeatureDevice"
                                     key={index}
                                 >
-                                    {device.icon}
-                                    <span>{device.name}</span>
+                                    {icon(device)}
+                                    <span>{device}</span>
                                 </span>
                             ))}
                         </td>

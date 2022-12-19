@@ -31,21 +31,6 @@ export interface Movie {
     vote_count: number;
 }
 
-export interface Product {
-    id: number;
-    name: string;
-    price: number;
-    currency: string;
-    quality: string;
-    resolution: string;
-    devices: Device[];
-}
-
-export interface Device {
-    name: string;
-    icon: React.ReactNode;
-}
-
 export interface Element {
     type:
         | 'Bloopers'
@@ -54,4 +39,15 @@ export interface Element {
         | 'Clip'
         | 'Trailer'
         | 'Teaser';
+}
+
+interface Plan {
+    id: string;
+    name: string;
+    price: number;
+    interval: string;
+    currency: string;
+    quality: string;
+    resolution: string;
+    devices: string;
 }
