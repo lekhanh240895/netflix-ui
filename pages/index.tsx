@@ -6,11 +6,14 @@ import Row from '../components/Row';
 import VideoModal from '../components/VideoModal';
 import { useAuth } from '../context/AuthContext';
 import { appSelector } from '../redux/selector';
-import { Movie } from '../typings';
+import { IUser, Movie } from '../typings';
 import requests from '../utils/request';
 import { fetchPostJSON } from '../utils/api-helpers';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
+import dbConnect from '../lib/connectDB';
+import getUser from '../lib/getUser';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 interface Props {
     netflixOriginals: Movie[];
@@ -21,6 +24,7 @@ interface Props {
     romanceMovies: Movie[];
     documentaries: Movie[];
     trendingNow: Movie[];
+    user: IUser;
 }
 export default function Home({
     netflixOriginals,
@@ -31,6 +35,7 @@ export default function Home({
     horrorMovies,
     romanceMovies,
     documentaries,
+    user,
 }: Props) {
     const { videoModalShow } = useSelector(appSelector);
     const { loading } = useAuth();
@@ -38,6 +43,8 @@ export default function Home({
     const [success, setSuccess] = useState<boolean>(false);
     const [sessionId, setSessionId] = useState<string | null>('');
     const router = useRouter();
+
+    console.log(user);
 
     useEffect(() => {
         // Check to see if this is a redirect back from Checkout
@@ -114,7 +121,26 @@ export default function Home({
     );
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps({
+    req,
+    res,
+}: {
+    req: NextApiRequest;
+    res: NextApiResponse;
+}) {
+    await dbConnect();
+
+    const user = await getUser(req, res);
+    if (!user) {
+        return {
+            redirect: {
+                permanent: false,
+                destination: '/login',
+            },
+            props: {},
+        };
+    }
+
     const [
         netflixOriginals,
         trendingNow,
@@ -145,6 +171,7 @@ export async function getServerSideProps() {
             horrorMovies: horrorMovies.results,
             romanceMovies: romanceMovies.results,
             documentaries: documentaries.results,
+            user,
         }, // will be passed to the page component as props
     };
 }

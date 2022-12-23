@@ -3,9 +3,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { useAuth } from '../../context/AuthContext';
 import { Alert } from '@mui/material';
 import { useRouter } from 'next/router';
+import axios from 'axios';
 
 interface Inputs {
     email: string;
@@ -13,31 +13,41 @@ interface Inputs {
 }
 
 function Login() {
-    const [show, setShow] = useState(false);
-    const [login, setLogin] = useState(false);
-    const [error, setError] = useState('');
+    const [show, setShow] = useState<boolean>(false);
+    const [isLogin, setIsLogin] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
     const {
         register,
         handleSubmit,
         watch,
         formState: { errors },
     } = useForm<Inputs>();
-    const { signIn, signUp } = useAuth();
     const router = useRouter();
 
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
-        if (login) {
+        if (isLogin) {
             try {
                 const { email, password } = data;
                 /* Custom Authentication */
-                // const res = await axios.post('/api/signin', {
-                //     email,
-                //     password,
-                // });
+                await axios.post('/api/auth/signin', {
+                    email,
+                    password,
+                });
+                router.push('/');
 
                 /* Firebase */
-                await signIn(email, password);
-                router.push('/');
+                // const { user } = await signIn(email, password);
+                // dispatch(
+                //     addUser({
+                //         name: user.displayName!,
+                //         email: user.email!,
+                //         image: user.photoURL!,
+                //         uid: user.uid,
+                //         lastOnline: serverTimestamp(),
+                //         createdAt: serverTimestamp(),
+                //     }),
+                // );
+                // router.push('/');
             } catch (err) {
                 const errorMessage =
                     err instanceof Error
@@ -51,15 +61,29 @@ function Login() {
                 const { email, password } = data;
 
                 /* Custom Authentication */
-                // const res = await axios.post('/api/signup', {
-                //     email,
-                //     password,
-                // });
+                await axios.post('/api/auth/signup', {
+                    email,
+                    password,
+                });
 
-                await signUp(email, password);
+                // const { user } = await signUp(email, password);
+                // dispatch(
+                //     addUser({
+                //         name: user.displayName!,
+                //         email: user.email!,
+                //         image: user.photoURL!,
+                //         uid: user.uid,
+                //         lastOnline: serverTimestamp(),
+                //         createdAt: serverTimestamp(),
+                //     }),
+                // );
                 router.push('/');
-            } catch (error) {
-                console.log(error);
+            } catch (err) {
+                const errorMessage =
+                    err instanceof Error
+                        ? err.message
+                        : 'Internal server error';
+                setError(errorMessage);
             }
         }
     };
@@ -84,7 +108,7 @@ function Login() {
                 sizes="large"
             />
 
-            <div className="absolute top-0 left-0 w-48 h-96">
+            <div className="absolute top-0 left-0 w-48 h-24">
                 <Image
                     src="/Netflix-Brand-Logo.png"
                     alt="Logo"
@@ -139,7 +163,7 @@ function Login() {
                     <button
                         type="submit"
                         className="w-full rounded bg-[#e50914] py-3 font-semibold"
-                        onClick={() => setLogin(true)}
+                        onClick={() => setIsLogin(true)}
                     >
                         Sign In
                     </button>
@@ -162,7 +186,7 @@ function Login() {
                         <span>New to Netflix?</span>
                         <button
                             className="text-white hover:underline"
-                            onClick={() => setLogin(false)}
+                            onClick={() => setIsLogin(false)}
                         >
                             Sign up now
                         </button>

@@ -11,7 +11,7 @@ import { PlayIcon } from '@heroicons/react/24/solid';
 import { Element, Genre, Movie } from '../typings';
 import { useDispatch, useSelector } from 'react-redux';
 import { appSelector } from '../redux/selector';
-import { hideVideoModal } from '../features/app/appSlice';
+import { hideVideoModal } from '../features/appSlice';
 import { Modal } from '@mui/material';
 
 export default function VideoModal() {

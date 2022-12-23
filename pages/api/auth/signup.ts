@@ -1,7 +1,7 @@
 // pages/api/signup.js
 
-import dbConnect from '../../lib/connectDB';
-import User from '../../models/user';
+import dbConnect from '../../../lib/connectDB';
+import User from '../../../models/user';
 import jwt from 'jsonwebtoken';
 import { setCookies } from 'cookies-next';
 import bcrypt from 'bcrypt';

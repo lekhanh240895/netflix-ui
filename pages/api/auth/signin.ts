@@ -1,15 +1,15 @@
 // pages/api/signin.js
 
-import dbConnect from '../../lib/connectDB';
-import User from '../../models/user';
+import dbConnect from '../../../lib/connectDB';
+import User from '../../../models/user';
 import jwt from 'jsonwebtoken';
-import { setCookies } from 'cookies-next';
+import { setCookie } from 'cookies-next';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import bcrypt from 'bcrypt';
 
-type Data = {
+interface Data {
     message: string;
-};
+}
 
 export default async function handler(
     req: NextApiRequest,
@@ -45,7 +45,7 @@ export default async function handler(
                 },
             );
 
-            setCookies('token', token, {
+            setCookie('token', token, {
                 req,
                 res,
                 maxAge: 60 * 60 * 24, // 1 day

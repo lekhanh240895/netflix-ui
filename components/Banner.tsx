@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { FaPlay } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { baseUrl } from '../constants/movie';
-import { showVideoModal, setSelectedMovie } from '../features/app/appSlice';
+import { showVideoModal, setSelectedMovie } from '../features/appSlice';
 import { Movie } from '../typings';
 
 interface Props {

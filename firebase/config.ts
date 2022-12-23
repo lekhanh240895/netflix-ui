@@ -1,7 +1,13 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import {
+    getFirestore,
+    DocumentData,
+    collection,
+    CollectionReference,
+} from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
+import { User } from '../typings';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -21,3 +27,11 @@ export const auth = getAuth(app);
 export const db = getFirestore();
 
 export const storage = getStorage(app);
+
+// This is just a helper to add the type to the db responses
+const createCollection = <T = DocumentData>(collectionName: string) => {
+    return collection(db, collectionName) as CollectionReference<T>;
+};
+
+// export all your collections
+export const usersCol = createCollection<User>('users');

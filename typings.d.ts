@@ -1,3 +1,4 @@
+import { FieldValue } from 'firebase/firestore';
 import React from 'react';
 
 export interface Genre {
@@ -5,11 +6,18 @@ export interface Genre {
     email: string;
 }
 
-export interface User {
+export interface IUser {
+    _id: {
+        id: string;
+    };
     id: string;
-    name?: string | null;
-    email?: string | null;
-    image?: string | null;
+    email: string;
+    password: string;
+    name?: string;
+    uid?: string;
+    image?: string;
+    lastOnline?: string | FieldValue;
+    createdAt?: string | FieldValue;
 }
 
 export interface Movie {

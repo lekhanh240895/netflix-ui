@@ -1,25 +1,10 @@
 import Image from 'next/image';
 import { MagnifyingGlassIcon, BellIcon } from '@heroicons/react/24/solid';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
-import { useAuth } from '../context/AuthContext';
 import BasicMenu from './BasicMenu';
 
 function Header() {
     const [isScrolled, setIsScrolled] = useState(false);
-    const router = useRouter();
-    const { logout } = useAuth();
-
-    const handleSignOut = async () => {
-        /* Custom Authentication */
-        // removeCookies('token');
-        // router.push('/auth/login');
-
-        /* Firebase */
-        await logout();
-        router.push('/auth/login');
-    };
 
     useEffect(() => {
         const handleScroll = () => {

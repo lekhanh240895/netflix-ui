@@ -2,7 +2,6 @@ import * as React from 'react';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Image from 'next/image';
-import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import { ChevronDownIcon } from '@heroicons/react/24/solid';
@@ -11,6 +10,7 @@ import {
     QuestionMarkCircleIcon,
     UserIcon,
 } from '@heroicons/react/24/outline';
+import { removeCookies } from 'cookies-next';
 
 function BasicMenu() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -21,17 +21,17 @@ function BasicMenu() {
     const handleClose = () => {
         setAnchorEl(null);
     };
-    const { logout } = useAuth();
+    // const { logout } = useAuth();
     const router = useRouter();
 
     const handleSignOut = async () => {
         /* Custom Authentication */
-        // removeCookies('token');
-        // router.push('/auth/login');
+        removeCookies('token');
+        router.push('/login');
 
         /* Firebase */
-        await logout();
-        router.push('/auth/login');
+        // await logout();
+        // router.replace('/login');
     };
     return (
         <div>
