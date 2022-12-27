@@ -89,7 +89,7 @@ function Login() {
     };
 
     return (
-        <div className="relative flex w-screen min-h-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent">
+        <div className="relative flex md:flex-row w-screen min-h-screen flex-col bg-black md:items-center md:justify-center md:bg-transparent">
             <Head>
                 <title>NetflixClone - Login</title>
                 <meta
@@ -98,7 +98,6 @@ function Login() {
                 />
                 <link rel="icon" href="/favicon.ico" />
             </Head>
-
             <Image
                 src="/Netflix-background.jpg"
                 alt="background"
@@ -107,18 +106,19 @@ function Login() {
                 priority={true}
                 sizes="large"
             />
-
-            <div className="absolute top-0 left-0 w-48 h-24">
-                <Image
-                    src="/Netflix-Brand-Logo.png"
-                    alt="Logo"
-                    fill
-                    sizes="large"
-                />
+            <div className="absolute top-0 left-0">
+                <div className="relative w-48 h-28">
+                    <Image
+                        src="/Netflix-Brand-Logo.png"
+                        alt="Logo"
+                        fill
+                        sizes="large"
+                    />
+                </div>
             </div>
 
             <form
-                className="relative mt-16 space-y-8 p-6 md:py-12 md:mb-16 md:max-w-md md:px-14 bg-black/75"
+                className="relative mt-24 space-y-8 p-6 md:py-12 md:mb-16 md:max-w-md md:px-14 bg-black/75"
                 onSubmit={handleSubmit(onSubmit)}
             >
                 {error && <Alert severity="error">{error}</Alert>}

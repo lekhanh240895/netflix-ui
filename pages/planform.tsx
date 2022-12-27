@@ -4,21 +4,33 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import Table from '../components/Table';
-import { Plan } from '../typings';
+import { IUser, Plan } from '../typings';
 import { fetchPostJSON } from '../utils/api-helpers';
 import getStripe from '../utils/get-stripesjs';
 import { useAuth } from '../context/AuthContext';
 import Stripe from 'stripe';
+import { NextApiRequest, NextApiResponse } from 'next';
+import dbConnect from '../lib/connectDB';
+import { removeCookies } from 'cookies-next';
+import { useRouter } from 'next/router';
 
 interface Props {
     plans: Plan[];
+    subscriptions: any;
 }
 
-function PlanForm({ plans }: Props) {
+function PlanForm({ plans, subscriptions }: Props) {
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(
         plans[plans.length - 1],
     );
-    const { logout } = useAuth();
+    const router = useRouter();
+
+    const handleSignOut = async () => {
+        /* Custom Authentication */
+        removeCookies('token');
+        router.push('/login');
+    };
+
     const handleClick = async () => {
         const response = await fetchPostJSON('/api/subscription', {
             priceId: selectedPlan?.id,
@@ -35,6 +47,7 @@ function PlanForm({ plans }: Props) {
         });
         console.warn(error.message);
     };
+    console.log({ subscriptions });
     return (
         <div>
             <Head>
@@ -58,7 +71,7 @@ function PlanForm({ plans }: Props) {
                 </Link>
                 <a
                     className="text-medium md:text-xl font-medium hover:underline h-full flex items-center cursor-pointer"
-                    onClick={logout}
+                    onClick={handleSignOut}
                 >
                     Log out
                 </a>
@@ -146,13 +159,23 @@ function PlanForm({ plans }: Props) {
 
 export default PlanForm;
 
-export const getStaticProps = async () => {
+export const getServerSideProps = async ({
+    req,
+    res,
+}: {
+    req: NextApiRequest;
+    res: NextApiResponse;
+}) => {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
         // https://github.com/stripe/stripe-node#configuration
         apiVersion: '2022-11-15',
     });
 
+    await dbConnect();
+
     const { data: prices } = await stripe.prices.list();
+
+    const subscriptions = await stripe.subscriptions.list();
 
     const plans = await Promise.all(
         prices.map(async (price) => {
@@ -176,6 +199,7 @@ export const getStaticProps = async () => {
     return {
         props: {
             plans,
+            subscriptions,
         },
     };
 };

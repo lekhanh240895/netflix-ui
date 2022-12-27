@@ -24,8 +24,6 @@ export default async function handler(
             new: true,
         });
 
-        console.log(user);
-
         res.json(user);
     } catch (err) {
         const errorMessage =

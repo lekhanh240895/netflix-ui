@@ -23,7 +23,7 @@ function Header() {
 
     return (
         <header
-            className={` ${isScrolled ? 'bg-[#141414]/80' : 'bg-[#141414]/2'}`}
+            className={` ${isScrolled ? 'bg-[#141414]/80' : 'bg-[#141414]/20'}`}
         >
             <div className="flex items-center space-x-2 md:space-x-10">
                 <div className="relative w-36 h-36">
@@ -48,10 +48,19 @@ function Header() {
 
             <div className="flex items-center space-x-4 text-sm font-light">
                 <MagnifyingGlassIcon className="hidden h-6 w-6 text-white md:inline" />
-                <p className="hidden lg-inline">Kis</p>
+                <p className="hidden lg-inline">Kids</p>
                 <BellIcon className="h-6 w-6" />
 
-                <BasicMenu />
+                <BasicMenu>
+                    <div className="relative w-8 h-8 cursor-pointer rounded">
+                        <Image
+                            src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png"
+                            alt="Avatar"
+                            fill
+                            sizes="large"
+                        />
+                    </div>
+                </BasicMenu>
             </div>
         </header>
     );

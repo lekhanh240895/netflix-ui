@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { appSelector } from '../redux/selector';
 import { IUser, Movie } from '../typings';
 import requests from '../utils/request';
-import { fetchPostJSON } from '../utils/api-helpers';
+import { fetchGetJSON, fetchPostJSON } from '../utils/api-helpers';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import dbConnect from '../lib/connectDB';
@@ -45,6 +45,12 @@ export default function Home({
     const router = useRouter();
 
     console.log(user);
+
+    useEffect(() => {
+        if (!user.is_sub) {
+            router.push('/planform');
+        }
+    }, [user, router]);
 
     useEffect(() => {
         // Check to see if this is a redirect back from Checkout
@@ -131,15 +137,6 @@ export async function getServerSideProps({
     await dbConnect();
 
     const user = await getUser(req, res);
-    if (!user) {
-        return {
-            redirect: {
-                permanent: false,
-                destination: '/login',
-            },
-            props: {},
-        };
-    }
 
     const [
         netflixOriginals,

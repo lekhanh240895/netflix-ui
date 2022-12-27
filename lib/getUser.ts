@@ -17,7 +17,7 @@ export default async function getUser(
     if (token) {
         try {
             const data = jwt.verify(token, process.env.TOKEN_SECRET) as Data;
-            let user = await User.findById(data.userId);
+            let user = await User.findById(data.userId).select('-password');
             user = JSON.parse(JSON.stringify(user));
             return user;
         } catch (error) {

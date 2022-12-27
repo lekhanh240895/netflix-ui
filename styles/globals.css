@@ -55,12 +55,12 @@ a {
     }
 
     /* Menu */
-    .menu {
+    /* .menu {
         @apply hidden md:block;
-    }
+    } */
 
     .menu .MuiPaper-root {
-        @apply !absolute !top-16 !left-auto !right-14 !bg-[black]/90 text-white;
+        @apply !absolute !top-14 md:!top-16 !left-auto right-4 md:!right-14 !bg-[black]/90 text-white;
     }
 
     .menu .MuiList-root {
@@ -89,5 +89,34 @@ a {
     }
     .tableDataFeatureDevice {
         @apply flex flex-col items-center justify-center space-y-1 mb-3 cursor-pointer;
+    }
+
+    /* Account */
+    .accountSection {
+        @apply min-h-[4.5rem] border-t border-[gray] flex flex-col md:flex-row;
+    }
+    .accountSectionHeader {
+        @apply mt-4 md:mb-5 space-y-4 w-64 pr-4;
+    }
+    .accountSectionHeading {
+        @apply text-lg text-[gray]/95;
+    }
+    .pageBtn {
+        @apply flex items-center justify-center py-2 px-3 rounded-sm bg-[#e6e6e6]  hover:bg-[#eaeaea] text-black text-sm transition duration-100;
+    }
+    .accountSubSection {
+        @apply mb-4;
+    }
+    .accountSectionContent {
+        @apply mt-4 flex-1 divide-y divide-gray-700;
+    }
+    .accountSectionItem {
+        @apply flex-1 flex items-center justify-between mb-3;
+    }
+    .accountSectionInfo {
+        @apply text-base font-medium flex space-x-5 items-center;
+    }
+    .accountSectionLink {
+        @apply text-[#0073e6] hover:underline;
     }
 }

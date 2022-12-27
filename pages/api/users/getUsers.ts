@@ -13,8 +13,9 @@ export default async function handler(
 
         res.json(users);
     } catch (err) {
-        const errorMessage =
-            err instanceof Error ? err.message : 'Internal server error';
-        throw new Error(errorMessage);
+        // const errorMessage =
+        //     err instanceof Error ? err.message : 'Internal server error';
+        // throw new Error(errorMessage);
+        console.log(err);
     }
 }

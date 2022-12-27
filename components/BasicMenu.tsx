@@ -12,7 +12,11 @@ import {
 } from '@heroicons/react/24/outline';
 import { removeCookies } from 'cookies-next';
 
-function BasicMenu() {
+interface Props {
+    children: React.ReactNode;
+}
+
+function BasicMenu({ children }: Props) {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
     const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -37,16 +41,9 @@ function BasicMenu() {
         <div>
             <div
                 onClick={handleClick}
-                className="flex flex-row items-center space-x-1 cursor-pointer"
+                className="flex flex-row items-center space-x-1 md:space-x-3 cursor-pointer"
             >
-                <div className="relative w-8 h-8 cursor-pointer rounded">
-                    <Image
-                        src="https://upload.wikimedia.org/wikipedia/commons/0/0b/Netflix-avatar.png"
-                        alt="Avatar"
-                        fill
-                        sizes="large"
-                    />
-                </div>
+                {children}
 
                 <ChevronDownIcon
                     className="w-4 h-4 transition-all 200ms hidden md:block"
