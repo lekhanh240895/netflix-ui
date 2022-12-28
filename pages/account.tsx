@@ -1,17 +1,50 @@
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import BasicMenu from '../components/BasicMenu';
 import { NetflixLogo } from '../components/icon';
 import Link from 'next/link';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
+import axios from 'axios';
+import { useRouter } from 'next/router';
+import { IUser } from '../typings';
+import useSWR, { Fetcher } from 'swr';
+import Stripe from 'stripe';
+import { NextApiRequest, NextApiResponse } from 'next';
+import getUser from '../lib/getUser';
 
-function Account() {
+interface Props {
+    subscription: unknown;
+    xuser: IUser;
+}
+
+function Account({}: Props) {
     const [open, setOpen] = useState(false);
+
+    const fetcher: Fetcher<IUser, string> = (path) =>
+        fetch(path).then((res) => res.json());
+
+    const { data: user, error } = useSWR<IUser, Error>(
+        '/api/users/getMe',
+        fetcher,
+    );
+
+    console.log({ user });
 
     const handleClick = () => {
         setOpen(!open);
     };
+
+    useEffect(() => {}, []);
+
+    const router = useRouter();
+
+    const loadBillingPortal = async () => {
+        const { data } = await axios.get('/api/create-portal-session');
+        router.push(data.url);
+    };
+
+    if (!user) return;
 
     return (
         <div>
@@ -23,6 +56,7 @@ function Account() {
                 />
                 <link rel="icon" href="/nficon2016.ico" />
             </Head>
+
             {/* Header */}
             <header className="bg-[#141414] h-14 px-2 md:h-20 md:px-11">
                 <Link href="/" className="relative">
@@ -44,7 +78,7 @@ function Account() {
                 </div>
             </header>
 
-            <main className="mt-20 mx-7 md:max-w-5xl md:mx-auto">
+            <main className="mt-14 md:mt-20 mx-7 py-2 md:max-w-5xl md:mx-auto">
                 <div className="space-y-4 mb-2 md:mb-5 md:flex md:items-center">
                     <h1 className="text-4xl">Tài khoản</h1>
 
@@ -59,7 +93,10 @@ function Account() {
                         <h2 className="accountSectionHeading">
                             TƯ CÁCH THÀNH VIÊN VÀ TÍNH PHÍ
                         </h2>
-                        <button className="pageBtn min-w-[200px] shadow-sm">
+                        <button
+                            className="pageBtn min-w-[200px] shadow-sm"
+                            onClick={loadBillingPortal}
+                        >
                             Hủy tư cách thành viên
                         </button>
                     </div>
@@ -68,7 +105,7 @@ function Account() {
                         <div className="accountSubSection">
                             <div className="accountSectionItem">
                                 <div className="accountSectionInfo">
-                                    lekhanh240895@gmail.com
+                                    {user.email}
                                 </div>
                                 <Link
                                     href="email"
@@ -146,8 +183,8 @@ function Account() {
                                     hơn thế nữa.
                                 </div>
 
-                                <div className="shrink-[0.3] md:flex-shrink-0 flex flex-col items-end space-y-2 ml-2">
-                                    <div>
+                                <div className="shrink-[0.5] md:flex-shrink-0 flex flex-col items-end space-y-2 ml-2">
+                                    <div className="text-right">
                                         <span className="bg-[#0f84fa] p-1 text-sm rounded mr-2">
                                             Mới
                                         </span>
@@ -328,14 +365,14 @@ function Account() {
                                 <div className="shrink-[0.3] md:flex-shrink-0 flex flex-col space-y-2 ml-2">
                                     <Link
                                         href="/phonenumber"
-                                        className="accountSectionLink"
+                                        className="accountSectionLink text-left"
                                     >
                                         Tham gia thử nghiệm
                                     </Link>
 
                                     <Link
                                         href="/phonenumber"
-                                        className="accountSectionLink"
+                                        className="accountSectionLink text-left"
                                     >
                                         Quản lý thiết bị tải xuống
                                     </Link>
@@ -350,3 +387,20 @@ function Account() {
 }
 
 export default Account;
+
+export const getServerSideProps = async ({
+    req,
+    res,
+}: {
+    req: NextApiRequest;
+    res: NextApiResponse;
+}) => {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+        // https://github.com/stripe/stripe-node#configuration
+        apiVersion: '2022-11-15',
+    });
+
+    return {
+        props: {},
+    };
+};

@@ -4,19 +4,16 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import Table from '../components/Table';
-import { IUser, Plan } from '../typings';
+import { Plan } from '../typings';
 import { fetchPostJSON } from '../utils/api-helpers';
 import getStripe from '../utils/get-stripesjs';
-import { useAuth } from '../context/AuthContext';
 import Stripe from 'stripe';
-import { NextApiRequest, NextApiResponse } from 'next';
-import dbConnect from '../lib/connectDB';
 import { removeCookies } from 'cookies-next';
 import { useRouter } from 'next/router';
 
 interface Props {
     plans: Plan[];
-    subscriptions: any;
+    subscriptions: unknown;
 }
 
 function PlanForm({ plans, subscriptions }: Props) {
@@ -47,7 +44,7 @@ function PlanForm({ plans, subscriptions }: Props) {
         });
         console.warn(error.message);
     };
-    console.log({ subscriptions });
+
     return (
         <div>
             <Head>
@@ -159,19 +156,11 @@ function PlanForm({ plans, subscriptions }: Props) {
 
 export default PlanForm;
 
-export const getServerSideProps = async ({
-    req,
-    res,
-}: {
-    req: NextApiRequest;
-    res: NextApiResponse;
-}) => {
+export const getServerSideProps = async () => {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
         // https://github.com/stripe/stripe-node#configuration
         apiVersion: '2022-11-15',
     });
-
-    await dbConnect();
 
     const { data: prices } = await stripe.prices.list();
 

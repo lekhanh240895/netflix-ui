@@ -1,4 +1,5 @@
 import Head from 'next/head';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Banner from '../components/Banner';
 import Header from '../components/Header';
@@ -8,12 +9,15 @@ import { useAuth } from '../context/AuthContext';
 import { appSelector } from '../redux/selector';
 import { IUser, Movie } from '../typings';
 import requests from '../utils/request';
-import { fetchGetJSON, fetchPostJSON } from '../utils/api-helpers';
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import dbConnect from '../lib/connectDB';
 import getUser from '../lib/getUser';
 import { NextApiRequest, NextApiResponse } from 'next';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    // https://github.com/stripe/stripe-node#configuration
+    apiVersion: '2022-11-15',
+});
 
 interface Props {
     netflixOriginals: Movie[];
@@ -38,45 +42,18 @@ export default function Home({
     user,
 }: Props) {
     const { videoModalShow } = useSelector(appSelector);
+
     const { loading } = useAuth();
-    const [message, setMessage] = useState<string>('');
-    const [success, setSuccess] = useState<boolean>(false);
-    const [sessionId, setSessionId] = useState<string | null>('');
     const router = useRouter();
 
-    console.log(user);
-
     useEffect(() => {
-        if (!user.is_sub) {
+        if (user && !user.is_sub) {
             router.push('/planform');
         }
     }, [user, router]);
 
-    useEffect(() => {
-        // Check to see if this is a redirect back from Checkout
-        const query = new URLSearchParams(window.location.search);
+    if (loading || !user?.is_sub) return null;
 
-        if (query.get('success')) {
-            setSuccess(true);
-            setSessionId(query.get('session_id'));
-        }
-
-        if (query.get('canceled')) {
-            setSuccess(false);
-            setMessage(
-                "Order canceled -- continue to shop around and checkout when you're ready.",
-            );
-        }
-    }, [sessionId]);
-
-    const gotoBillingPortal = async () => {
-        const portal = await fetchPostJSON('/api/create-portal-session', {
-            sessionId,
-        });
-        router.push(portal.url);
-    };
-
-    if (loading) return null;
     return (
         <div
             className={`relative h-screen bg-gradient-to-b lg:h-[140vh] max-w-[100vw] ${
@@ -98,13 +75,6 @@ export default function Home({
             <main className="relative pl-4 md:pl-4 pb-24 lg:space-y-14 lg:pl-16 pt-14">
                 {/* Banner */}
                 <Banner netflixOriginals={netflixOriginals} />
-
-                <button
-                    id="checkout-and-portal-button"
-                    onClick={gotoBillingPortal}
-                >
-                    Manage your billing information
-                </button>
 
                 <section className="space-y-2 md:space-y-4">
                     {/* Row */}
@@ -134,8 +104,6 @@ export async function getServerSideProps({
     req: NextApiRequest;
     res: NextApiResponse;
 }) {
-    await dbConnect();
-
     const user = await getUser(req, res);
 
     const [

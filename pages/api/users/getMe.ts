@@ -1,30 +1,30 @@
-// lib/getUser.js
-
 import { getCookie } from 'cookies-next';
 import jwt from 'jsonwebtoken';
-import User from '../models/user';
+import User from '../../../models/user';
 import { NextApiRequest, NextApiResponse } from 'next';
-import dbConnect from './connectDB';
+import dbConnect from '../../../lib/connectDB';
 
 interface Data {
     userId: string;
 }
 
-export default async function getUser(
+export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse,
 ) {
     await dbConnect();
 
     const token = getCookie('token', { req, res }) as string;
+
     if (token) {
         try {
             const data = jwt.verify(token, process.env.TOKEN_SECRET) as Data;
-            let user = await User.findById(data.userId).select('-password');
-            user = JSON.parse(JSON.stringify(user));
-            return user;
+            const user = await User.findById(data.userId).select('-password');
+            res.status(200).json(user);
         } catch (error) {
-            return null;
+            res.status(500).json({ message: 'Error' });
         }
+    } else {
+        res.status(404).json({ message: 'Authorization failed!' });
     }
 }

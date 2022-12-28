@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import Stripe from 'stripe';
+import getUser from '../../../lib/getUser';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     // https://github.com/stripe/stripe-node#configuration
     apiVersion: '2022-11-15',
@@ -10,19 +11,20 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse,
 ) {
-    const sessionId: string | null = req.body.sessionId as string;
-    const checkoutSession = await stripe.checkout.sessions.retrieve(sessionId);
-
     try {
         // This is the url to which the customer will be redirected when they are done
         // managing their billing with the portal.
         const returnUrl = req.headers.origin;
 
+        const user = await getUser(req, res);
+
         const portalSession = await stripe.billingPortal.sessions.create({
-            customer: checkoutSession.customer as string,
+            customer: user.stripe_customer,
             return_url: returnUrl,
         });
-        res.status(200).json(portalSession);
+        res.status(200).json({
+            url: portalSession.url,
+        });
     } catch (err) {
         const errorMessage =
             err instanceof Error ? err.message : 'Internal server error';

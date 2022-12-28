@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
-import User from '../../../models/user';
-import { getCookie } from 'cookies-next';
-import jwt from 'jsonwebtoken';
+import getUser from '../../../lib/getUser';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
     // https://github.com/stripe/stripe-node#configuration
@@ -19,14 +17,7 @@ export default async function handler(
 ) {
     if (req.method === 'POST') {
         const priceId: string = req.body.priceId as string;
-        const token = getCookie('token', { req, res }) as string;
-
-        if (!token) {
-            return res.status(401).send('Unauthorized');
-        }
-
-        const data = jwt.verify(token, process.env.TOKEN_SECRET) as Data;
-        const user = await User.findById(data.userId).select('-password');
+        const user = await getUser(req, res);
 
         try {
             // Create Checkout Sessions from body params.

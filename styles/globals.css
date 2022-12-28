@@ -117,6 +117,6 @@ a {
         @apply text-base font-medium flex space-x-5 items-center;
     }
     .accountSectionLink {
-        @apply text-[#0073e6] hover:underline;
+        @apply text-[#0073e6] hover:underline text-right;
     }
 }

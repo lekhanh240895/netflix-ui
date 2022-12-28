@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
+import { getCookie } from 'cookies-next';
 
 export default async function handler(
     req: NextApiRequest,
@@ -13,9 +14,8 @@ export default async function handler(
 
         res.json(users);
     } catch (err) {
-        // const errorMessage =
-        //     err instanceof Error ? err.message : 'Internal server error';
-        // throw new Error(errorMessage);
-        console.log(err);
+        const errorMessage =
+            err instanceof Error ? err.message : 'Internal server error';
+        throw new Error(errorMessage);
     }
 }

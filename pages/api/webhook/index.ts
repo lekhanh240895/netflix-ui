@@ -26,6 +26,7 @@ const cors = Cors({
 
 interface IObject extends Stripe.Event.Data.Object {
     customer?: string;
+    start_date?: string;
 }
 
 const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -51,10 +52,26 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
             return;
         }
 
+        console.log(event.data.object);
+
         const object: IObject = event.data.object;
 
         switch (event.type) {
             case 'customer.subscription.created':
+                await user.findOneAndUpdate(
+                    {
+                        stripe_customer: object.customer,
+                    },
+                    {
+                        is_sub: true,
+                        // start_date: object.start_date,
+                    },
+                    {
+                        new: true,
+                    },
+                );
+                break;
+            case 'customer.subscription.updated':
                 await user.findOneAndUpdate(
                     {
                         stripe_customer: object.customer,
@@ -66,6 +83,22 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
                         new: true,
                     },
                 );
+                break;
+            case 'customer.subscription.deleted':
+                await user.findOneAndUpdate(
+                    {
+                        stripe_customer: object.customer,
+                    },
+                    {
+                        is_sub: false,
+                    },
+                    {
+                        new: true,
+                    },
+                );
+                break;
+            default:
+                console.log(`Unhandled event type ${event.type}`);
         }
 
         // Return a response to acknowledge receipt of the event.
