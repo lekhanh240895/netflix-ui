@@ -5,11 +5,13 @@ import { Movie } from '../typings';
 export interface appState {
     videoModalShow: boolean;
     selectedMovie: Movie | null;
+    myList: Movie[];
 }
 
 const initialState: appState = {
     videoModalShow: false,
     selectedMovie: null,
+    myList: [],
 };
 
 export const appSlice = createSlice({
@@ -25,11 +27,26 @@ export const appSlice = createSlice({
         hideVideoModal: (state) => {
             state.videoModalShow = false;
         },
+        addMovie: (state, action) => {
+            state.myList.push(action.payload);
+        },
+        removeMovie: (state, action) => {
+            const newList = state.myList.filter(
+                (movie) => movie.id !== action.payload,
+            );
+            state.myList = newList;
+            console.log(action.payload, newList);
+        },
     },
 });
 
 // Action creators are generated for each case reducer function
-export const { setSelectedMovie, showVideoModal, hideVideoModal } =
-    appSlice.actions;
+export const {
+    setSelectedMovie,
+    showVideoModal,
+    hideVideoModal,
+    addMovie,
+    removeMovie,
+} = appSlice.actions;
 
 export default appSlice.reducer;

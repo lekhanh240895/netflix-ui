@@ -1,25 +1,39 @@
 import { useEffect, useState } from 'react';
 import ReactPlayer from 'react-player/lazy';
 import {
+    CheckIcon,
     HandThumbUpIcon,
     PlusIcon,
     SpeakerWaveIcon,
     SpeakerXMarkIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline';
-import { PlayIcon } from '@heroicons/react/24/solid';
+import {
+    HandThumbUpIcon as HandThumbUpIconSolid,
+    PlayIcon,
+} from '@heroicons/react/24/solid';
 import { Element, Genre, Movie } from '../typings';
 import { useDispatch, useSelector } from 'react-redux';
 import { appSelector } from '../redux/selector';
-import { hideVideoModal } from '../features/appSlice';
+import { addMovie, hideVideoModal, removeMovie } from '../features/appSlice';
 import { Modal } from '@mui/material';
 
 export default function VideoModal() {
-    const { videoModalShow, selectedMovie } = useSelector(appSelector);
+    const { videoModalShow, selectedMovie, myList } = useSelector(appSelector);
     const [trailer, setTrailer] = useState<string>('');
     const [genres, setGenres] = useState<Genre[]>([]);
     const [muted, setMuted] = useState(true);
     const [movie, setMovie] = useState<Movie | null>(null);
+    const [isLiked, setIsLiked] = useState<boolean>(false);
+    const [isMyList, setIsMyList] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (myList.some((movie) => movie.id === selectedMovie?.id)) {
+            setIsMyList(true);
+        } else {
+            setIsMyList(false);
+        }
+    }, [myList, selectedMovie]);
 
     const dispatch = useDispatch();
     const closeModal = () => {
@@ -54,6 +68,14 @@ export default function VideoModal() {
         fetchMovie();
     }, [selectedMovie]);
 
+    const handleAddList = () => {
+        if (isMyList) {
+            dispatch(removeMovie(selectedMovie?.id));
+        } else {
+            dispatch(addMovie(selectedMovie));
+        }
+    };
+
     return (
         <Modal
             open={videoModalShow}
@@ -80,7 +102,7 @@ export default function VideoModal() {
 
                     <div className="absolute bottom-12 left-0 right-0 px-12 flex items-center justify-between">
                         <div className="flex flex-row items-center space-x-2">
-                            <button className="flex flex-row items-center space-x-2 bg-white py-1 px-4 md:py-2 md:px-7 rounded hover:bg-[#e6e6e6]">
+                            <button className="flex flex-row items-center space-x-2 bg-white py-1 px-4 md:py-2 md:px-7 rounded hover:bg-[#e6e6e6]  focus:outline-white focus:outline-none">
                                 <PlayIcon
                                     className="w-4 h-4 md:w-7 md:h-7"
                                     color="black"
@@ -89,11 +111,27 @@ export default function VideoModal() {
                                     Play
                                 </span>
                             </button>
-                            <button className="modalButton ">
-                                <PlusIcon className="w-3 h-3 md:w-5 md:h-5" />
+
+                            <button
+                                className="modalButton"
+                                onClick={handleAddList}
+                            >
+                                {isMyList ? (
+                                    <CheckIcon className="w-3 h-3 md:w-5 md:h-5" />
+                                ) : (
+                                    <PlusIcon className="w-3 h-3 md:w-5 md:h-5" />
+                                )}
                             </button>
-                            <button className="modalButton">
-                                <HandThumbUpIcon className="w-3 h-3 md:w-5 md:h-5" />
+
+                            <button
+                                className="modalButton"
+                                onClick={() => setIsLiked(!isLiked)}
+                            >
+                                {isLiked ? (
+                                    <HandThumbUpIconSolid className="w-3 h-3 md:w-5 md:h-5 text-red" />
+                                ) : (
+                                    <HandThumbUpIcon className="w-3 h-3 md:w-5 md:h-5" />
+                                )}
                             </button>
                         </div>
 

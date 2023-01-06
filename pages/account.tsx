@@ -527,36 +527,40 @@ export const getServerSideProps = async ({
 
     let plan: Partial<Plan> = {};
 
-    if (subscriptions.length > 0) {
-        const userSub: IObject | undefined = subscriptions.find(
-            (sub) => sub.customer === user?.stripe_customer,
+    const userSub: IObject | undefined = subscriptions.find(
+        (sub) => sub.customer === user?.stripe_customer,
+    );
+
+    const { data: paymentMethods } = await stripe.customers.listPaymentMethods(
+        user?.stripe_customer || '',
+        {
+            type: 'card',
+        },
+    );
+
+    if (userSub) {
+        const price = await stripe.prices.retrieve(userSub.plan?.id || '');
+        const product: Stripe.Product = await stripe.products.retrieve(
+            price.product as string,
         );
 
-        const { data: paymentMethods } =
-            await stripe.customers.listPaymentMethods(
-                user?.stripe_customer || '',
-                {
-                    type: 'card',
-                },
-            );
+        plan.name = product.name;
+        plan.price = price.unit_amount!;
+        plan.interval = userSub.plan?.interval;
+        plan.startDate = userSub.start_date;
+        plan.paymentMethods = paymentMethods;
 
-        if (userSub) {
-            const price = await stripe.prices.retrieve(userSub.plan?.id || '');
-            const product: Stripe.Product = await stripe.products.retrieve(
-                price.product as string,
-            );
-
-            plan.name = product.name;
-            plan.price = price.unit_amount!;
-            plan.interval = userSub.plan?.interval;
-            plan.startDate = userSub.start_date;
-            plan.paymentMethods = paymentMethods;
-        }
+        return {
+            props: {
+                plan,
+            },
+        };
     }
 
     return {
-        props: {
-            plan,
+        redirect: {
+            destination: '/planform',
+            permanent: false,
         },
     };
 };

@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import Banner from '../components/Banner';
 import Header from '../components/Header';
@@ -35,10 +35,12 @@ export default function Home({
     documentaries,
     user,
 }: Props) {
-    const { videoModalShow } = useSelector(appSelector);
+    const { videoModalShow, myList } = useSelector(appSelector);
 
     const { loading } = useAuth();
     const router = useRouter();
+
+    console.log({ myList });
 
     useEffect(() => {
         if (user && !user.is_sub) {
@@ -75,8 +77,11 @@ export default function Home({
                     <Row title="Trending Now" movies={trendingNow} />
                     <Row title="Top Rated" movies={topRated} />
                     <Row title="Action Thrillers" movies={actionMovies} />
+
                     {/* My List */}
-                    {/* {list.length > 0 && <Row title="My List" movies={list} />} */}
+                    {myList.length > 0 && (
+                        <Row title="My List" movies={myList} />
+                    )}
 
                     <Row title="Comedies" movies={comedyMovies} />
                     <Row title="Scary Movies" movies={horrorMovies} />

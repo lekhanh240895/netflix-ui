@@ -42,7 +42,7 @@ a {
 /* custom classNames */
 @layer components {
     .modalButton {
-        @apply flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#2a2a2a]/60 border-2 border-[gray] transition hover:border-[white] hover:bg-[#2a2a2a]/90;
+        @apply flex items-center justify-center w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#2a2a2a]/60 border-2 border-[gray] transition hover:border-[white] hover:bg-[#2a2a2a]/90 focus:outline-white focus:outline-none focus:outline-offset-0;
     }
     .headerLink {
         @apply cursor-pointer text-sm font-light text-[#e5e5e5] transition duration-[0.4s] hover:text-[#b3b3b3];

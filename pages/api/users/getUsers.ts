@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import clientPromise from '../../../lib/mongodb';
-import { getCookie } from 'cookies-next';
 
 export default async function handler(
     req: NextApiRequest,

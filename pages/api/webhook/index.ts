@@ -52,8 +52,6 @@ const webhookHandler = async (req: NextApiRequest, res: NextApiResponse) => {
             return;
         }
 
-        console.log(event.data.object);
-
         const object: IObject = event.data.object;
 
         switch (event.type) {
