@@ -18,13 +18,19 @@ export default async function handler(
 
         const user = await getUser(req, res);
 
-        const portalSession = await stripe.billingPortal.sessions.create({
-            customer: user.stripe_customer,
-            return_url: returnUrl,
-        });
-        res.status(200).json({
-            url: portalSession.url,
-        });
+        if (user?.stripe_customer) {
+            const portalSession = await stripe.billingPortal.sessions.create({
+                customer: user.stripe_customer,
+                return_url: returnUrl,
+            });
+            res.status(200).json({
+                url: portalSession.url,
+            });
+        } else {
+            res.status(400).json({
+                error: 'User not found!',
+            });
+        }
     } catch (err) {
         const errorMessage =
             err instanceof Error ? err.message : 'Internal server error';

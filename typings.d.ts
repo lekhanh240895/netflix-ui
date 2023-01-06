@@ -1,4 +1,5 @@
 import React from 'react';
+import Stripe from 'stripe';
 
 export interface Genre {
     name: string;
@@ -56,4 +57,6 @@ interface Plan {
     quality: string;
     resolution: string;
     devices: string;
+    startDate?: number;
+    paymentMethods?: Stripe.PaymentMethod[];
 }

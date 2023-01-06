@@ -32,7 +32,7 @@ export default async function handler(
                 ],
                 success_url: `${req.headers.origin}/`,
                 cancel_url: `${req.headers.origin}/planform`,
-                customer: user.stripe_customer,
+                customer: user?.stripe_customer,
             };
             const checkoutSession: Stripe.Checkout.Session =
                 await stripe.checkout.sessions.create(params);

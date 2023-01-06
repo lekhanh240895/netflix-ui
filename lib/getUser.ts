@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import User from '../models/user';
 import { NextApiRequest, NextApiResponse } from 'next';
 import dbConnect from './connectDB';
+import { IUser } from '../typings';
 
 interface Data {
     userId: string;
@@ -20,7 +21,9 @@ export default async function getUser(
     if (token) {
         try {
             const data = jwt.verify(token, process.env.TOKEN_SECRET) as Data;
-            let user = await User.findById(data.userId).select('-password');
+            let user: IUser = await User.findById(data.userId).select(
+                '-password',
+            );
             user = JSON.parse(JSON.stringify(user));
             return user;
         } catch (error) {

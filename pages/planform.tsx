@@ -13,10 +13,9 @@ import { useRouter } from 'next/router';
 
 interface Props {
     plans: Plan[];
-    subscriptions: unknown;
 }
 
-function PlanForm({ plans, subscriptions }: Props) {
+function PlanForm({ plans }: Props) {
     const [selectedPlan, setSelectedPlan] = useState<Plan | null>(
         plans[plans.length - 1],
     );
@@ -164,8 +163,6 @@ export const getServerSideProps = async () => {
 
     const { data: prices } = await stripe.prices.list();
 
-    const subscriptions = await stripe.subscriptions.list();
-
     const plans = await Promise.all(
         prices.map(async (price) => {
             const product = await stripe.products.retrieve(
@@ -188,7 +185,6 @@ export const getServerSideProps = async () => {
     return {
         props: {
             plans,
-            subscriptions,
         },
     };
 };

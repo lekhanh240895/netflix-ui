@@ -7,32 +7,40 @@ import Link from 'next/link';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { IUser } from '../typings';
+import { IUser, Plan } from '../typings';
 import useSWR, { Fetcher } from 'swr';
 import Stripe from 'stripe';
 import { NextApiRequest, NextApiResponse } from 'next';
 import getUser from '../lib/getUser';
+import { format, fromUnixTime } from 'date-fns';
+import { vi } from 'date-fns/locale';
 
 interface Props {
-    subscription: unknown;
-    xuser: IUser;
+    plan: Plan;
 }
 
-function Account({}: Props) {
-    const [open, setOpen] = useState(false);
+function Account({ plan }: Props) {
+    const [open1, setOpen1] = useState(false);
+    const [open2, setOpen2] = useState(false);
+
+    const formatDate = (timestamp: number) =>
+        format(fromUnixTime(timestamp), 'MMMM yyyy', {
+            locale: vi,
+        });
 
     const fetcher: Fetcher<IUser, string> = (path) =>
         fetch(path).then((res) => res.json());
-
     const { data: user, error } = useSWR<IUser, Error>(
         '/api/users/getMe',
         fetcher,
     );
 
-    console.log({ user });
+    const handleClick1 = () => {
+        setOpen1(!open1);
+    };
 
-    const handleClick = () => {
-        setOpen(!open);
+    const handleClick2 = () => {
+        setOpen2(!open2);
     };
 
     useEffect(() => {}, []);
@@ -84,7 +92,12 @@ function Account({}: Props) {
 
                     <div className="ml-5 flex items-center space-x-2">
                         <div className="w-7 h-7 bg-[url('https://assets.nflxext.com/ffe/siteui/account/svg/membersince.svg')] bg-center" />
-                        <span>Thành viên từ tháng mười một 2021</span>
+
+                        {plan.startDate && (
+                            <span>
+                                Thành viên từ {formatDate(plan.startDate)}
+                            </span>
+                        )}
                     </div>
                 </div>
 
@@ -140,9 +153,48 @@ function Account({}: Props) {
                             </div>
                         </div>
                         <div className="accountSubSection pt-3 pb-5">
-                            <h2 className="text-base font-medium">
-                                Không có thông tin thanh toán
-                            </h2>
+                            {plan.paymentMethods?.length! <= 0 ? (
+                                <h2 className="text-base font-medium">
+                                    Không có thông tin thanh toán
+                                </h2>
+                            ) : (
+                                plan.paymentMethods!.map((pm) => (
+                                    <div
+                                        key={pm.id}
+                                        className="accountSectionItem items-start"
+                                    >
+                                        <div className="accountSectionInfo">
+                                            <h2 className="flex items-center">
+                                                {pm.card?.brand.toUpperCase()}:
+                                                <span className="ml-3 tracking-widest">
+                                                    ******{pm.card?.last4}
+                                                </span>
+                                            </h2>
+                                        </div>
+
+                                        <div className="flex flex-col items-end space-y-2 ml-2">
+                                            <span
+                                                className="accountSectionLink cursor-pointer"
+                                                onClick={loadBillingPortal}
+                                            >
+                                                Quản lý thông tin thanh toán
+                                            </span>
+                                            <span
+                                                className="accountSectionLink cursor-pointer"
+                                                onClick={loadBillingPortal}
+                                            >
+                                                Chi tiết thanh toán
+                                            </span>
+                                            <span
+                                                className="accountSectionLink cursor-pointer"
+                                                onClick={loadBillingPortal}
+                                            >
+                                                Thay đổi thanh toán
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </section>
                 </div>
@@ -157,9 +209,14 @@ function Account({}: Props) {
                     <section className="accountSectionContent">
                         <div className="accountSubSection">
                             <div className="accountSectionItem">
-                                <div className="accountSectionInfo">Free</div>
+                                <div className="accountSectionInfo">
+                                    {plan.name}
+                                </div>
 
-                                <button className="pageBtn bg-primary hover:bg-[#f40612] text-white min-w-[98px] rounded-none">
+                                <button
+                                    className="pageBtn bg-primary hover:bg-[#f40612] text-white min-w-[98px] rounded-none"
+                                    onClick={loadBillingPortal}
+                                >
                                     Nâng cấp
                                 </button>
                             </div>
@@ -242,12 +299,12 @@ function Account({}: Props) {
                                     </div>
                                 </div>
 
-                                <span onClick={handleClick}>
+                                <span onClick={handleClick1}>
                                     <ChevronDownIcon
                                         className="w-6 h-6 transition-all 200ms cursor-pointer"
                                         color="white"
                                         style={{
-                                            transform: open
+                                            transform: open1
                                                 ? 'rotateZ(180deg)'
                                                 : 'none',
                                         }}
@@ -258,7 +315,7 @@ function Account({}: Props) {
 
                         <div
                             className={`${
-                                open && 'hidden'
+                                open1 && 'hidden'
                             } space-y-5 divide-y divide-gray-700 pl-28`}
                         >
                             <div className="pt-4">
@@ -338,17 +395,78 @@ function Account({}: Props) {
                                     </div>
                                 </div>
 
-                                <span onClick={handleClick}>
+                                <span onClick={handleClick2}>
                                     <ChevronDownIcon
                                         className="w-6 h-6 transition-all 200ms cursor-pointer"
                                         color="white"
                                         style={{
-                                            transform: open
+                                            transform: open2
                                                 ? 'rotateZ(180deg)'
                                                 : 'none',
                                         }}
                                     />
                                 </span>
+                            </div>
+
+                            <div
+                                className={`${
+                                    open2 && 'hidden'
+                                } space-y-5 divide-y divide-gray-700 pl-28`}
+                            >
+                                <div className="pt-4">
+                                    <div className="accountSectionItem">
+                                        <div className="">
+                                            <h3 className="text-base font-normal">
+                                                Ngôn ngữ
+                                            </h3>
+                                            <span className="text-gray-500 text-sm">
+                                                Tiếng Việt
+                                            </span>
+                                        </div>
+                                        <Link
+                                            href="/phonenumber"
+                                            className="accountSectionLink text-sm"
+                                        >
+                                            Thay đổi
+                                        </Link>
+                                    </div>
+                                </div>
+                                <div className="pt-4">
+                                    <div className="accountSectionItem">
+                                        <div className="">
+                                            <h3 className="text-base font-normal">
+                                                Ngôn ngữ
+                                            </h3>
+                                            <span className="text-gray-500 text-sm">
+                                                Tiếng Việt
+                                            </span>
+                                        </div>
+                                        <Link
+                                            href="/phonenumber"
+                                            className="accountSectionLink text-sm"
+                                        >
+                                            Thay đổi
+                                        </Link>
+                                    </div>
+                                </div>
+                                <div className="pt-4">
+                                    <div className="accountSectionItem">
+                                        <div className="">
+                                            <h3 className="text-base font-normal">
+                                                Giới hạn xem
+                                            </h3>
+                                            <span className="text-gray-500 text-sm">
+                                                Không giới hạn.
+                                            </span>
+                                        </div>
+                                        <Link
+                                            href="/phonenumber"
+                                            className="accountSectionLink text-sm"
+                                        >
+                                            Thay đổi
+                                        </Link>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -388,6 +506,10 @@ function Account({}: Props) {
 
 export default Account;
 
+interface IObject extends Stripe.Subscription {
+    plan?: Stripe.Plan;
+}
+
 export const getServerSideProps = async ({
     req,
     res,
@@ -400,7 +522,41 @@ export const getServerSideProps = async ({
         apiVersion: '2022-11-15',
     });
 
+    const user = await getUser(req, res);
+    const { data: subscriptions } = await stripe.subscriptions.list();
+
+    let plan: Partial<Plan> = {};
+
+    if (subscriptions.length > 0) {
+        const userSub: IObject | undefined = subscriptions.find(
+            (sub) => sub.customer === user?.stripe_customer,
+        );
+
+        const { data: paymentMethods } =
+            await stripe.customers.listPaymentMethods(
+                user?.stripe_customer || '',
+                {
+                    type: 'card',
+                },
+            );
+
+        if (userSub) {
+            const price = await stripe.prices.retrieve(userSub.plan?.id || '');
+            const product: Stripe.Product = await stripe.products.retrieve(
+                price.product as string,
+            );
+
+            plan.name = product.name;
+            plan.price = price.unit_amount!;
+            plan.interval = userSub.plan?.interval;
+            plan.startDate = userSub.start_date;
+            plan.paymentMethods = paymentMethods;
+        }
+    }
+
     return {
-        props: {},
+        props: {
+            plan,
+        },
     };
 };
