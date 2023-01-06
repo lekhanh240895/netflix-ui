@@ -7,7 +7,7 @@ import {
     CollectionReference,
 } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { User } from '../typings';
+import { IUser } from '../typings';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -34,4 +34,4 @@ const createCollection = <T = DocumentData>(collectionName: string) => {
 };
 
 // export all your collections
-export const usersCol = createCollection<User>('users');
+export const usersCol = createCollection<IUser>('users');
