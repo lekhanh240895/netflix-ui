@@ -27,15 +27,11 @@ export const appSlice = createSlice({
         hideVideoModal: (state) => {
             state.videoModalShow = false;
         },
-        addMovie: (state, action) => {
-            state.myList.push(action.payload);
+        setMyList: (state, action) => {
+            state.myList = action.payload;
         },
-        removeMovie: (state, action) => {
-            const newList = state.myList.filter(
-                (movie) => movie.id !== action.payload,
-            );
-            state.myList = newList;
-            console.log(action.payload, newList);
+        deleteList: (state, action) => {
+            state.myList = [];
         },
     },
 });
@@ -45,8 +41,8 @@ export const {
     setSelectedMovie,
     showVideoModal,
     hideVideoModal,
-    addMovie,
-    removeMovie,
+    setMyList,
+    deleteList,
 } = appSlice.actions;
 
 export default appSlice.reducer;

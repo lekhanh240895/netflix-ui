@@ -12,11 +12,13 @@ import {
     HandThumbUpIcon as HandThumbUpIconSolid,
     PlayIcon,
 } from '@heroicons/react/24/solid';
-import { Element, Genre, Movie } from '../typings';
+import { Element, Genre, IList, IUser, Movie } from '../typings';
 import { useDispatch, useSelector } from 'react-redux';
 import { appSelector } from '../redux/selector';
-import { addMovie, hideVideoModal, removeMovie } from '../features/appSlice';
+import { addMovie, hideVideoModal, setMyList } from '../features/appSlice';
 import { Modal } from '@mui/material';
+import useSWR, { Fetcher } from 'swr';
+import axios from 'axios';
 
 export default function VideoModal() {
     const { videoModalShow, selectedMovie, myList } = useSelector(appSelector);
@@ -27,6 +29,11 @@ export default function VideoModal() {
     const [isLiked, setIsLiked] = useState<boolean>(false);
     const [isMyList, setIsMyList] = useState<boolean>(false);
 
+    const fetcher: Fetcher<IUser, string> = (path) =>
+        fetch(path).then((res) => res.json());
+
+    const { data: user } = useSWR<IUser, Error>('/api/users/getMe', fetcher);
+
     useEffect(() => {
         if (myList.some((movie) => movie.id === selectedMovie?.id)) {
             setIsMyList(true);
@@ -36,6 +43,7 @@ export default function VideoModal() {
     }, [myList, selectedMovie]);
 
     const dispatch = useDispatch();
+
     const closeModal = () => {
         dispatch(hideVideoModal());
     };
@@ -68,11 +76,15 @@ export default function VideoModal() {
         fetchMovie();
     }, [selectedMovie]);
 
-    const handleAddList = () => {
-        if (isMyList) {
-            dispatch(removeMovie(selectedMovie?.id));
-        } else {
-            dispatch(addMovie(selectedMovie));
+    const handleAddList = async () => {
+        try {
+            const { data: list } = await axios.put(`api/list/${user?._id}`, {
+                selectedMovie,
+            });
+
+            dispatch(setMyList(list.movies));
+        } catch (err) {
+            console.log(err);
         }
     };
 

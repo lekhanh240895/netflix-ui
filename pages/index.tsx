@@ -7,11 +7,12 @@ import Row from '../components/Row';
 import VideoModal from '../components/VideoModal';
 import { useAuth } from '../context/AuthContext';
 import { appSelector } from '../redux/selector';
-import { IUser, Movie } from '../typings';
+import { IList, IUser, Movie } from '../typings';
 import requests from '../utils/request';
 import { useRouter } from 'next/router';
-import getUser from '../lib/getUser';
-import { NextApiRequest, NextApiResponse } from 'next';
+import useSWR, { Fetcher } from 'swr';
+import { setMyList } from '../features/appSlice';
+import { useAppDispatch } from '../hooks/hooks';
 
 interface Props {
     netflixOriginals: Movie[];
@@ -24,6 +25,7 @@ interface Props {
     trendingNow: Movie[];
     user: IUser;
 }
+
 export default function Home({
     netflixOriginals,
     trendingNow,
@@ -33,14 +35,34 @@ export default function Home({
     horrorMovies,
     romanceMovies,
     documentaries,
-    user,
 }: Props) {
     const { videoModalShow, myList } = useSelector(appSelector);
 
     const { loading } = useAuth();
     const router = useRouter();
+    const dispatch = useAppDispatch();
 
-    console.log({ myList });
+    const fetcher: Fetcher<IUser, string> = (path) =>
+        fetch(path).then((res) => res.json());
+
+    const { data: user, error } = useSWR<IUser, Error>(
+        '/api/users/getMe',
+        fetcher,
+    );
+
+    const listFetcher: Fetcher<IList, string> = (path) =>
+        fetch(path).then((res) => res.json());
+
+    const { data: list } = useSWR<IList, Error>(
+        `/api/list/${user?._id}`,
+        listFetcher,
+    );
+
+    useEffect(() => {
+        if (typeof list !== 'undefined' && list && list?.movies?.length > 0) {
+            dispatch(setMyList(list?.movies));
+        }
+    }, [list, dispatch]);
 
     useEffect(() => {
         if (user && !user.is_sub) {
@@ -96,15 +118,7 @@ export default function Home({
     );
 }
 
-export async function getServerSideProps({
-    req,
-    res,
-}: {
-    req: NextApiRequest;
-    res: NextApiResponse;
-}) {
-    const user = await getUser(req, res);
-
+export async function getStaticProps() {
     const [
         netflixOriginals,
         trendingNow,
@@ -135,7 +149,7 @@ export async function getServerSideProps({
             horrorMovies: horrorMovies.results,
             romanceMovies: romanceMovies.results,
             documentaries: documentaries.results,
-            user,
         }, // will be passed to the page component as props
+        revalidate: 3600,
     };
 }

@@ -7,9 +7,11 @@ import { setCookie } from 'cookies-next';
 import bcrypt from 'bcrypt';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import Stripe from 'stripe';
+import { IUser } from '../../../typings';
 
 type Data = {
-    message: string;
+    message?: string;
+    user?: IUser;
 };
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -26,39 +28,52 @@ export default async function handler(
     const { email, password } = req.body;
 
     if (req.method === 'POST') {
-        const userExist = await User.findOne({ email });
+        try {
+            const userExist = await User.findOne({ email });
 
-        if (userExist)
-            return res.status(422).json({ message: 'Email already in use!' });
+            if (userExist)
+                return res
+                    .status(422)
+                    .json({ message: 'Email already in use!' });
 
-        // Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashPassword = await bcrypt.hash(password, salt);
+            // Hash password
+            const salt = await bcrypt.genSalt(10);
+            const hashPassword = await bcrypt.hash(password, salt);
 
-        // Create stripe customer for user
-        const customer = await stripe.customers.create({
-            email,
-        });
+            // Create stripe customer for user
+            const customer = await stripe.customers.create({
+                email,
+            });
 
-        const user = new User({
-            email,
-            password: hashPassword,
-            stripe_customer: customer.id,
-        });
-        await user.save();
+            const user = new User({
+                email,
+                password: hashPassword,
+                stripe_customer: customer.id,
+            });
 
-        const token = jwt.sign({ userId: user._id }, process.env.TOKEN_SECRET, {
-            expiresIn: '1d',
-        });
+            await user.save();
 
-        setCookie('token', token, {
-            req,
-            res,
-            maxAge: 60 * 60 * 24, // 1 day
-            path: '/',
-        });
+            const token = jwt.sign(
+                { userId: user._id },
+                process.env.TOKEN_SECRET,
+                {
+                    expiresIn: '1d',
+                },
+            );
 
-        res.status(201).json(user);
+            setCookie('token', token, {
+                req,
+                res,
+                maxAge: 60 * 60 * 24, // 1 day
+                path: '/',
+            });
+
+            res.status(201).json({ user });
+        } catch (err) {
+            const errorMessage =
+                err instanceof Error ? err.message : 'Internal server error';
+            throw new Error(errorMessage);
+        }
     } else {
         res.status(424).json({ message: 'Invalid method!' });
     }

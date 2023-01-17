@@ -10,7 +10,7 @@ import {
     QuestionMarkCircleIcon,
     UserIcon,
 } from '@heroicons/react/24/outline';
-import { removeCookies } from 'cookies-next';
+import { deleteCookie } from 'cookies-next';
 
 interface Props {
     children: React.ReactNode;
@@ -30,7 +30,7 @@ function BasicMenu({ children }: Props) {
 
     const handleSignOut = async () => {
         /* Custom Authentication */
-        removeCookies('token');
+        deleteCookie('token');
         router.push('/login');
 
         /* Firebase */

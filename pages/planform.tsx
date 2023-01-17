@@ -8,7 +8,7 @@ import { Plan } from '../typings';
 import { fetchPostJSON } from '../utils/api-helpers';
 import getStripe from '../utils/get-stripesjs';
 import Stripe from 'stripe';
-import { removeCookies } from 'cookies-next';
+import { deleteCookie } from 'cookies-next';
 import { useRouter } from 'next/router';
 
 interface Props {
@@ -23,7 +23,7 @@ function PlanForm({ plans }: Props) {
 
     const handleSignOut = async () => {
         /* Custom Authentication */
-        removeCookies('token');
+        deleteCookie('token');
         router.push('/login');
     };
 

@@ -1,19 +1,20 @@
 import Head from 'next/head';
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import BasicMenu from '../components/BasicMenu';
-import { NetflixLogo } from '../components/icon';
 import Link from 'next/link';
 import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import axios from 'axios';
 import { useRouter } from 'next/router';
-import { IUser, Plan } from '../typings';
 import useSWR, { Fetcher } from 'swr';
 import Stripe from 'stripe';
 import { NextApiRequest, NextApiResponse } from 'next';
 import getUser from '../lib/getUser';
 import { format, fromUnixTime } from 'date-fns';
 import { vi } from 'date-fns/locale';
+
+import BasicMenu from '../components/BasicMenu';
+import { NetflixLogo } from '../components/icon';
+import { IUser, Plan } from '../typings';
 
 interface Props {
     plan: Plan;
@@ -30,6 +31,7 @@ function Account({ plan }: Props) {
 
     const fetcher: Fetcher<IUser, string> = (path) =>
         fetch(path).then((res) => res.json());
+
     const { data: user, error } = useSWR<IUser, Error>(
         '/api/users/getMe',
         fetcher,
@@ -42,8 +44,6 @@ function Account({ plan }: Props) {
     const handleClick2 = () => {
         setOpen2(!open2);
     };
-
-    useEffect(() => {}, []);
 
     const router = useRouter();
 
@@ -532,7 +532,7 @@ export const getServerSideProps = async ({
     );
 
     const { data: paymentMethods } = await stripe.customers.listPaymentMethods(
-        user?.stripe_customer || '',
+        user?.stripe_customer as string,
         {
             type: 'card',
         },

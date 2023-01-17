@@ -19,6 +19,13 @@ export interface IUser {
     is_sub?: boolean;
 }
 
+export interface IList {
+    user: string;
+    movies: Movie[];
+    createdAt?: number;
+    updatedAt?: number;
+    _id: string;
+}
 export interface Movie {
     title: string;
     backdrop_path: string;
@@ -36,6 +43,8 @@ export interface Movie {
     poster_path: string;
     vote_average: number;
     vote_count: number;
+    createdAt?: number;
+    updatedAt?: number;
 }
 
 export interface Element {
