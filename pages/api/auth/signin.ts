@@ -8,7 +8,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import bcrypt from 'bcrypt';
 
 interface Data {
-    message: string;
+    errorMessage: string;
 }
 
 export default async function handler(
@@ -24,16 +24,15 @@ export default async function handler(
 
         if (!user)
             return res
-                .status(422)
-                .json({ message: 'Wrong email or password!' });
+                .status(400)
+                .json({ errorMessage: 'Wrong email or password!' });
 
         const validPassword = await bcrypt.compare(password, user.password);
 
         if (!validPassword) {
             res.status(400).json({
-                message: 'Incorrect password!',
+                errorMessage: 'Incorrect password!',
             });
-            throw new Error('Incorrect password!');
         }
 
         if (user && validPassword) {
@@ -55,6 +54,6 @@ export default async function handler(
             res.status(200).json(user);
         }
     } else {
-        res.status(424).json({ message: 'Invalid method!' });
+        res.status(424).json({ errorMessage: 'Invalid method!' });
     }
 }

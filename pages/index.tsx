@@ -50,6 +50,12 @@ export default function Home({
         fetcher,
     );
 
+    useEffect(() => {
+        if (user && !user.is_sub) {
+            router.push('/planform');
+        }
+    }, [user, router]);
+
     const listFetcher: Fetcher<IList, string> = (path) =>
         fetch(path).then((res) => res.json());
 
@@ -63,12 +69,6 @@ export default function Home({
             dispatch(setMyList(list?.movies));
         }
     }, [list, dispatch]);
-
-    useEffect(() => {
-        if (user && !user.is_sub) {
-            router.push('/planform');
-        }
-    }, [user, router]);
 
     if (loading || !user?.is_sub) return null;
 

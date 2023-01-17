@@ -10,7 +10,7 @@ import Stripe from 'stripe';
 import { IUser } from '../../../typings';
 
 type Data = {
-    message?: string;
+    errorMessage?: string;
     user?: IUser;
 };
 
@@ -33,8 +33,8 @@ export default async function handler(
 
             if (userExist)
                 return res
-                    .status(422)
-                    .json({ message: 'Email already in use!' });
+                    .status(400)
+                    .json({ errorMessage: 'Email already in use!' });
 
             // Hash password
             const salt = await bcrypt.genSalt(10);
@@ -72,9 +72,9 @@ export default async function handler(
         } catch (err) {
             const errorMessage =
                 err instanceof Error ? err.message : 'Internal server error';
-            throw new Error(errorMessage);
+            res.status(400).json({ errorMessage: errorMessage });
         }
     } else {
-        res.status(424).json({ message: 'Invalid method!' });
+        res.status(424).json({ errorMessage: 'Invalid method!' });
     }
 }

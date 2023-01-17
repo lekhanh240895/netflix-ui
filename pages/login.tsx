@@ -2,10 +2,14 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useState } from 'react';
+import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { Alert } from '@mui/material';
 import { useRouter } from 'next/router';
-import axios from 'axios';
+import { useAppDispatch, useAppSelector } from '../hooks/hooks';
+import { authSelector } from '../redux/selector';
+import { login, signup } from '../features/authSlice';
 
 interface Inputs {
     email: string;
@@ -15,7 +19,6 @@ interface Inputs {
 function Login() {
     const [show, setShow] = useState<boolean>(false);
     const [isLogin, setIsLogin] = useState<boolean>(false);
-    const [error, setError] = useState<string>('');
     const {
         register,
         handleSubmit,
@@ -23,68 +26,30 @@ function Login() {
         formState: { errors },
     } = useForm<Inputs>();
     const router = useRouter();
+    const { error: authError, loading } = useAppSelector(authSelector);
+    const dispatch = useAppDispatch();
 
     const onSubmit: SubmitHandler<Inputs> = async (data) => {
         if (isLogin) {
-            try {
-                const { email, password } = data;
-                /* Custom Authentication */
-                await axios.post('/api/auth/signin', {
+            const { email, password } = data;
+            const resultAction = await dispatch(
+                login({
                     email,
                     password,
-                });
-                router.push('/');
-
-                /* Firebase */
-                // const { user } = await signIn(email, password);
-                // dispatch(
-                //     addUser({
-                //         name: user.displayName!,
-                //         email: user.email!,
-                //         image: user.photoURL!,
-                //         uid: user.uid,
-                //         lastOnline: serverTimestamp(),
-                //         createdAt: serverTimestamp(),
-                //     }),
-                // );
-                // router.push('/');
-            } catch (err) {
-                const errorMessage =
-                    err instanceof Error
-                        ? err.message
-                        : 'Internal server error';
-                setError(errorMessage);
-            }
+                }),
+            );
+            router.push('/');
         } else {
             // SignUp
-            try {
-                const { email, password } = data;
+            const { email, password } = data;
 
-                /* Custom Authentication */
-                await axios.post('/api/auth/signup', {
+            const resultAction = await dispatch(
+                signup({
                     email,
                     password,
-                });
-
-                // const { user } = await signUp(email, password);
-                // dispatch(
-                //     addUser({
-                //         name: user.displayName!,
-                //         email: user.email!,
-                //         image: user.photoURL!,
-                //         uid: user.uid,
-                //         lastOnline: serverTimestamp(),
-                //         createdAt: serverTimestamp(),
-                //     }),
-                // );
-                router.push('/');
-            } catch (err) {
-                const errorMessage =
-                    err instanceof Error
-                        ? err.message
-                        : 'Internal server error';
-                setError(errorMessage);
-            }
+                }),
+            );
+            router.push('/');
         }
     };
 
@@ -116,12 +81,11 @@ function Login() {
                     />
                 </div>
             </div>
-
             <form
                 className="relative mt-24 space-y-8 p-6 md:py-12 md:mb-16 md:max-w-md md:px-14 bg-black/75"
                 onSubmit={handleSubmit(onSubmit)}
             >
-                {error && <Alert severity="error">{error}</Alert>}
+                {authError && <Alert severity="error">{authError}</Alert>}
 
                 <h1 className="text-3xl font-semibold">Sign In</h1>
                 <div className="space-y-4">
@@ -223,6 +187,14 @@ function Login() {
                     </p>
                 </div>
             </form>
+
+            {loading && (
+                <div className="absolute bottom-10 left-1/2 -translate-x-1/2 right-0">
+                    <Box sx={{ width: '100%' }}>
+                        <LinearProgress color="info" />
+                    </Box>
+                </div>
+            )}
         </div>
     );
 }

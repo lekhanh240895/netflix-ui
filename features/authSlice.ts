@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
 import { IUser } from '../typings';
-import axios from 'axios';
+import { fetchPostJSON } from '../utils/api-helpers';
 
 interface MyKnownError {
     errorMessage: string;
@@ -10,11 +9,13 @@ interface MyKnownError {
 export interface InitialState {
     user: IUser | null;
     error: string | null;
+    loading: boolean;
 }
 
 const initialState: InitialState = {
     user: null,
     error: null,
+    loading: false,
 };
 
 export const authSlice = createSlice({
@@ -22,19 +23,39 @@ export const authSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
+        builder.addCase(login.pending, (state, action) => {
+            state.loading = true;
+            state.error = null;
+        });
         builder.addCase(login.fulfilled, (state, action) => {
             state.user = action.payload;
+            state.loading = false;
+            state.error = null;
         });
         builder.addCase(login.rejected, (state, action) => {
             if (action.payload) {
-                // Being that we passed in ValidationErrors to rejectType in `createAsyncThunk`, the payload will be available here.
                 state.error = action.payload.errorMessage;
             } else {
-                state.error = action.error.message!;
+                state.error = action.error.message as string;
             }
+            state.loading = false;
+        });
+        builder.addCase(signup.pending, (state, action) => {
+            state.loading = true;
+            state.error = null;
         });
         builder.addCase(signup.fulfilled, (state, action) => {
             state.user = action.payload;
+            state.loading = false;
+            state.error = null;
+        });
+        builder.addCase(signup.rejected, (state, action) => {
+            if (action.payload) {
+                state.error = action.payload.errorMessage;
+            } else {
+                state.error = action.error.message as string;
+            }
+            state.loading = false;
         });
     },
 });
@@ -49,28 +70,40 @@ export const login = createAsyncThunk<
         rejectValue: MyKnownError;
     }
 >('auth/loginStatus', async ({ email, password }, { rejectWithValue }) => {
-    const response = await axios.post('/api/signin', {
+    const response = await fetchPostJSON('/api/auth/signin', {
         email,
         password,
     });
 
+    const data = await response.json();
+
     if (response.status === 400) {
-        return rejectWithValue(response.data.message as MyKnownError);
+        return rejectWithValue(data as MyKnownError);
     }
-    return response.data as IUser;
+    return data as IUser;
 });
 
-export const signup = createAsyncThunk(
-    'auth/signupStatus',
-    async ({ email, password }: { email: string; password: string }) => {
-        const res: IUser = await axios.post('/api/signup', {
-            email,
-            password,
-        });
-        return res;
-    },
-);
+export const signup = createAsyncThunk<
+    IUser,
+    {
+        email: string;
+        password: string;
+    } & Partial<IUser>,
+    {
+        rejectValue: MyKnownError;
+    }
+>('auth/signupStatus', async ({ email, password }, { rejectWithValue }) => {
+    const response = await fetchPostJSON('/api/auth/signup', {
+        email,
+        password,
+    });
 
-// Action creators are generated for each case reducer function
+    const data = await response.json();
+
+    if (response.status === 400) {
+        return rejectWithValue(data as MyKnownError);
+    }
+    return data as IUser;
+});
 
 export default authSlice.reducer;
