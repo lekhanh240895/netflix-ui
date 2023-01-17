@@ -15,7 +15,7 @@ import {
 import { Element, Genre, IList, IUser, Movie } from '../typings';
 import { useDispatch, useSelector } from 'react-redux';
 import { appSelector } from '../redux/selector';
-import { addMovie, hideVideoModal, setMyList } from '../features/appSlice';
+import { hideVideoModal, setMyList } from '../features/appSlice';
 import { Modal } from '@mui/material';
 import useSWR, { Fetcher } from 'swr';
 import axios from 'axios';
