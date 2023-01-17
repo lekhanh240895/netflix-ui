@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { IUser } from '../typings';
 import { fetchPostJSON } from '../utils/api-helpers';
+import axios from 'axios';
 
 interface MyKnownError {
     errorMessage: string;
@@ -70,9 +71,18 @@ export const login = createAsyncThunk<
         rejectValue: MyKnownError;
     }
 >('auth/loginStatus', async ({ email, password }, { rejectWithValue }) => {
-    const response = await fetchPostJSON('/api/auth/signin', {
-        email,
-        password,
+    const response = await fetch('/api/auth/signin', {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+            'Content-Type': 'application/json',
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *client
+        body: JSON.stringify({ email, password }), // body data type must match "Content-Type" header
     });
 
     const data = await response.json();
@@ -93,9 +103,18 @@ export const signup = createAsyncThunk<
         rejectValue: MyKnownError;
     }
 >('auth/signupStatus', async ({ email, password }, { rejectWithValue }) => {
-    const response = await fetchPostJSON('/api/auth/signup', {
-        email,
-        password,
+    const response = await fetch('/api/auth/signup', {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        mode: 'cors', // no-cors, *cors, same-origin
+        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+            'Content-Type': 'application/json',
+            // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        redirect: 'follow', // manual, *follow, error
+        referrerPolicy: 'no-referrer', // no-referrer, *client
+        body: JSON.stringify({ email, password }), // body data type must match "Content-Type" header
     });
 
     const data = await response.json();
