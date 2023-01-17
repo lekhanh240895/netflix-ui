@@ -12,9 +12,9 @@ import {
     HandThumbUpIcon as HandThumbUpIconSolid,
     PlayIcon,
 } from '@heroicons/react/24/solid';
-import { Element, Genre, IList, IUser, Movie } from '../typings';
+import { Element, Genre, IUser, Movie } from '../typings';
 import { useDispatch, useSelector } from 'react-redux';
-import { appSelector } from '../redux/selector';
+import { appSelector, authSelector } from '../redux/selector';
 import { hideVideoModal, setMyList } from '../features/appSlice';
 import { Modal } from '@mui/material';
 import useSWR, { Fetcher } from 'swr';
@@ -41,6 +41,14 @@ export default function VideoModal() {
             setIsMyList(false);
         }
     }, [myList, selectedMovie]);
+
+    useEffect(() => {
+        if (user?.likes.includes(selectedMovie?.id as number)) {
+            setIsLiked(true);
+        } else {
+            setIsLiked(false);
+        }
+    }, [user, selectedMovie]);
 
     const dispatch = useDispatch();
 
@@ -86,6 +94,14 @@ export default function VideoModal() {
         } catch (err) {
             console.log(err);
         }
+    };
+
+    const handleLike = async () => {
+        setIsLiked(!isLiked);
+
+        await axios.post(`/api/users/${user?._id}/like`, {
+            movieId: selectedMovie?.id,
+        });
     };
 
     return (
@@ -137,7 +153,7 @@ export default function VideoModal() {
 
                             <button
                                 className="modalButton"
-                                onClick={() => setIsLiked(!isLiked)}
+                                onClick={handleLike}
                             >
                                 {isLiked ? (
                                     <HandThumbUpIconSolid className="w-3 h-3 md:w-5 md:h-5 text-red" />

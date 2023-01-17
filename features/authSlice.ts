@@ -22,7 +22,11 @@ const initialState: InitialState = {
 export const authSlice = createSlice({
     name: 'auth',
     initialState,
-    reducers: {},
+    reducers: {
+        setUser: (state, action) => {
+            state.user = action.payload;
+        },
+    },
     extraReducers: (builder) => {
         builder.addCase(login.pending, (state, action) => {
             state.loading = true;
@@ -124,5 +128,7 @@ export const signup = createAsyncThunk<
     }
     return data as IUser;
 });
+
+export const { setUser } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -17,6 +17,7 @@ export interface IUser {
     isSubscribed: false;
     stripe_customer?: string;
     is_sub?: boolean;
+    likes: number[];
 }
 
 export interface IList {
