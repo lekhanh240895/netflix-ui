@@ -1,8 +1,23 @@
+Add .env.local
 NEXT_PUBLIC_API_KEY=2ac74fcea3b1469efcd96acca1a27245
+
 TOKEN_SECRET=alsdaij232@#1jnz
+
 MONGODB_URI=mongodb+srv://lekhanh:jX6hjdRzdClmKDYk@cluster0.ivyjmmx.mongodb.net/Netflix?retryWrites=true&w=majority
+
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_51MEzimFfupIoPTpagl3NuGdButaPFwJorTkgggOOwCCTu5mS9A5vrHPwp37B4nYcptlZsX3JALZ4LkS93HD2rrKg00VZrARVgk
+
 STRIPE_SECRET_KEY=sk_test_51MEzimFfupIoPTpaF6XFAHJ72x2MuQGkALDqKzAs8Ahmj3IcB9WIJeLL8N4S9Uy4Q5ySAkgPVHrYFfKdvGsGjhsH007Snk7I2w
+
+STRIPE_WEBHOOK_SECRET=whsec_jweaDb4iQWTGT7ajHwAjygnD2HzjxjG2
+
+Add next-env.d.ts
+/// <reference types="next" />
+/// <reference types="next/image-types/global" />
+
+// NOTE: This file should not be edited
+// see https://nextjs.org/docs/basic-features/typescript for more information.
+
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
